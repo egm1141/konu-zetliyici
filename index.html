@@ -3,1479 +3,984 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PageCraft — Canva Tarzı Belge Editörü</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>PageCraft</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0f0f13;
-  --panel: #16161c;
-  --panel2: #1e1e26;
-  --border: #2a2a38;
-  --accent: #6c63ff;
-  --accent2: #ff6584;
-  --gold: #f5c842;
-  --text: #ededf0;
-  --muted: #7a7a9a;
-  --radius: 10px;
-}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+body{background:#111;color:#eee;font-family:'Outfit',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;user-select:none;}
 
-/* ── TOP BAR ── */
-.topbar{
-  height:52px;background:var(--panel);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:200;
-}
-.logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;letter-spacing:-0.5px;}
-.logo span{color:var(--accent);}
-.topbar-sep{width:1px;height:24px;background:var(--border);}
-.tb-btn{
-  padding:6px 12px;border-radius:7px;border:1px solid var(--border);
-  background:var(--panel2);color:var(--text);font-family:'Outfit',sans-serif;
-  font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;
-  display:flex;align-items:center;gap:5px;white-space:nowrap;
-}
-.tb-btn:hover{border-color:var(--accent);color:var(--accent);}
-.tb-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
-.tb-btn.primary:hover{background:#5a52e0;border-color:#5a52e0;color:#fff;}
-.spacer{flex:1;}
+/* TOPBAR */
+.topbar{height:50px;background:#1a1a22;border-bottom:1px solid #2a2a38;display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;}
+.logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;}
+.logo b{color:#6c63ff;}
+.tbtn{padding:6px 12px;border-radius:7px;border:1px solid #2a2a38;background:#222;color:#ddd;font-size:12px;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .15s;}
+.tbtn:hover{border-color:#6c63ff;color:#6c63ff;}
+.tbtn.pri{background:#6c63ff;border-color:#6c63ff;color:#fff;}
+.tbtn.pri:hover{background:#5a52e0;}
+.sep{width:1px;height:28px;background:#2a2a38;}
+.sp{flex:1;}
 
-/* ── LAYOUT ── */
-.workspace{display:flex;flex:1;overflow:hidden;}
+/* LAYOUT */
+.main{display:flex;flex:1;overflow:hidden;}
 
-/* ── LEFT SIDEBAR ── */
-.sidebar-left{
-  width:64px;background:var(--panel);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:4px;flex-shrink:0;
-}
-.side-icon{
-  width:44px;height:44px;border-radius:9px;border:1px solid transparent;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  cursor:pointer;transition:all .15s;font-size:18px;gap:2px;
-  color:var(--muted);
-}
-.side-icon span{font-size:9px;color:var(--muted);}
-.side-icon:hover,.side-icon.active{background:var(--panel2);border-color:var(--border);color:var(--text);}
-.side-icon.active{border-color:var(--accent);color:var(--accent);}
-.side-icon.active span{color:var(--accent);}
+/* ICON RAIL */
+.rail{width:58px;background:#1a1a22;border-right:1px solid #2a2a38;display:flex;flex-direction:column;align-items:center;padding:8px 0;gap:2px;flex-shrink:0;}
+.rail-btn{width:46px;height:46px;border-radius:9px;border:1px solid transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;color:#666;font-size:17px;gap:1px;}
+.rail-btn span{font-size:8px;color:#555;}
+.rail-btn:hover{background:#222;color:#aaa;}
+.rail-btn.on{background:#222;border-color:#6c63ff;color:#6c63ff;}
+.rail-btn.on span{color:#6c63ff;}
 
-/* ── LEFT PANEL CONTENT ── */
-.panel-content{
-  width:280px;background:var(--panel);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;
-  transition:width .2s;
-}
-.panel-content.hidden{width:0;}
-.panel-inner{flex:1;overflow-y:auto;padding:14px;}
-.panel-inner::-webkit-scrollbar{width:4px;}
-.panel-inner::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
-.panel-title{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:12px;}
+/* SIDE PANEL */
+.side{width:270px;background:#1a1a22;border-right:1px solid #2a2a38;overflow-y:auto;flex-shrink:0;}
+.side::-webkit-scrollbar{width:4px;}
+.side::-webkit-scrollbar-thumb{background:#2a2a38;border-radius:99px;}
+.pblock{padding:14px;}
+.plabel{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#555;font-weight:600;margin-bottom:10px;}
 
-/* Template grid */
-.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.tpl-card{
-  background:var(--panel2);border:1.5px solid var(--border);border-radius:9px;
-  padding:10px 8px;cursor:pointer;transition:all .15s;text-align:center;
-}
-.tpl-card:hover{border-color:var(--accent);transform:translateY(-1px);}
-.tpl-card.active{border-color:var(--accent);background:rgba(108,99,255,.1);}
-.tpl-icon{font-size:22px;margin-bottom:5px;}
-.tpl-name{font-size:10px;color:var(--muted);font-weight:500;line-height:1.3;}
+/* Template cards */
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.tcard{background:#222;border:1.5px solid #2a2a38;border-radius:9px;padding:10px 7px;cursor:pointer;text-align:center;transition:all .15s;}
+.tcard:hover{border-color:#6c63ff;transform:translateY(-1px);background:#252535;}
+.tcard-icon{font-size:20px;margin-bottom:4px;}
+.tcard-name{font-size:10px;color:#888;line-height:1.3;}
 
-/* Colors */
-.color-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:12px;}
-.c-dot{width:100%;aspect-ratio:1;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:all .15s;}
-.c-dot:hover,.c-dot.active{border-color:#fff;transform:scale(1.1);}
-.color-custom{display:flex;gap:8px;align-items:center;margin-bottom:12px;}
-.color-custom input[type=color]{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;padding:0;background:none;}
-.color-custom input[type=text]{flex:1;background:var(--panel2);border:1px solid var(--border);border-radius:7px;padding:6px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;}
-.color-custom input[type=text]:focus{outline:none;border-color:var(--accent);}
+/* Inputs */
+.sinput{width:100%;background:#222;border:1px solid #2a2a38;border-radius:7px;padding:7px 10px;color:#eee;font-size:12px;font-family:'Outfit',sans-serif;outline:none;}
+.sinput:focus{border-color:#6c63ff;}
+.sselect{width:100%;background:#222;border:1px solid #2a2a38;border-radius:7px;padding:7px 8px;color:#eee;font-size:12px;font-family:'Outfit',sans-serif;outline:none;cursor:pointer;}
+.sselect:focus{border-color:#6c63ff;}
 
-/* Font controls */
-.font-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
-.font-label{font-size:11px;color:var(--muted);width:60px;flex-shrink:0;}
-.font-sel,.size-sel{
-  flex:1;background:var(--panel2);border:1px solid var(--border);border-radius:7px;
-  padding:6px 8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;
-}
-.font-sel:focus,.size-sel:focus{outline:none;border-color:var(--accent);}
-.style-btns{display:flex;gap:4px;}
-.style-btn{
-  width:32px;height:32px;border-radius:6px;border:1px solid var(--border);
-  background:var(--panel2);color:var(--text);font-size:13px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;transition:all .15s;
-  font-family:'Outfit',sans-serif;font-weight:600;
-}
-.style-btn:hover,.style-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+/* Color row */
+.crow{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:10px;}
+.cdot{aspect-ratio:1;border-radius:5px;cursor:pointer;border:2px solid transparent;transition:all .15s;}
+.cdot:hover{border-color:#fff;transform:scale(1.1);}
+.cinput{display:flex;gap:7px;align-items:center;}
+.cinput input[type=color]{width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;padding:1px;background:#222;}
+.cinput input[type=text]{flex:1;background:#222;border:1px solid #2a2a38;border-radius:7px;padding:6px 8px;color:#eee;font-size:11px;font-family:monospace;outline:none;}
+.cinput input[type=text]:focus{border-color:#6c63ff;}
 
-/* Align btns */
-.align-btns{display:flex;gap:4px;margin-bottom:8px;}
-.align-btn{
-  flex:1;height:30px;border-radius:6px;border:1px solid var(--border);
-  background:var(--panel2);color:var(--muted);font-size:13px;cursor:pointer;transition:all .15s;
-}
-.align-btn:hover,.align-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+/* Style buttons */
+.sbtns{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+.sbtn{width:32px;height:32px;border-radius:6px;border:1px solid #2a2a38;background:#222;color:#eee;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.sbtn:hover,.sbtn.on{background:#6c63ff;border-color:#6c63ff;color:#fff;}
+.abtns{display:flex;gap:5px;margin-bottom:8px;}
+.abtn{flex:1;height:30px;border-radius:6px;border:1px solid #2a2a38;background:#222;color:#888;font-size:12px;cursor:pointer;transition:all .15s;}
+.abtn:hover,.abtn.on{background:#6c63ff;border-color:#6c63ff;color:#fff;}
 
-/* Photo panel */
-.photo-drop{
-  border:2px dashed var(--border);border-radius:10px;padding:24px 16px;
-  text-align:center;cursor:pointer;transition:all .2s;position:relative;background:var(--panel2);
-  margin-bottom:12px;
-}
-.photo-drop:hover,.photo-drop.over{border-color:var(--accent);background:rgba(108,99,255,.05);}
-.photo-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.photo-thumb{
-  aspect-ratio:1;border-radius:8px;overflow:hidden;cursor:pointer;
-  border:2px solid var(--border);transition:border-color .15s;position:relative;
-}
-.photo-thumb:hover{border-color:var(--accent);}
-.photo-thumb img{width:100%;height:100%;object-fit:cover;}
-.photo-thumb .del-btn{
-  position:absolute;top:3px;right:3px;background:rgba(0,0,0,.7);border:none;
-  border-radius:50%;width:18px;height:18px;color:#fff;font-size:9px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;
-}
-.photo-thumb:hover .del-btn{opacity:1;}
+/* Photo */
+.drop-area{border:2px dashed #2a2a38;border-radius:9px;padding:22px 12px;text-align:center;cursor:pointer;transition:all .2s;background:#1e1e28;position:relative;margin-bottom:10px;}
+.drop-area:hover,.drop-area.ov{border-color:#6c63ff;background:rgba(108,99,255,.06);}
+.drop-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.pthumb{aspect-ratio:1;border-radius:7px;overflow:hidden;border:2px solid #2a2a38;cursor:pointer;position:relative;transition:border-color .15s;}
+.pthumb:hover{border-color:#6c63ff;}
+.pthumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.pthumb .pdel{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.7);border:none;border-radius:50%;width:18px;height:18px;color:#fff;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;}
+.pthumb:hover .pdel{opacity:1;}
 
-/* Shapes */
-.shape-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-.shape-btn{
-  aspect-ratio:1;border-radius:8px;border:1px solid var(--border);background:var(--panel2);
-  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;
-  transition:all .15s;
-}
-.shape-btn:hover{border-color:var(--accent);background:rgba(108,99,255,.1);}
+/* Shapes & stickers */
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+.sshape{aspect-ratio:1;border-radius:7px;border:1px solid #2a2a38;background:#222;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .15s;}
+.sshape:hover{border-color:#6c63ff;background:#252535;}
+.emgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;}
+.embtn{aspect-ratio:1;border-radius:7px;background:#222;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .15s;border:1px solid transparent;}
+.embtn:hover{border-color:#6c63ff;transform:scale(1.08);}
 
-/* Stickers */
-.sticker-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
-.sticker-btn{
-  aspect-ratio:1;border-radius:7px;border:1px solid transparent;background:var(--panel2);
-  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;
-  transition:all .15s;
-}
-.sticker-btn:hover{border-color:var(--accent);transform:scale(1.1);}
+/* BG swatches */
+.bggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px;}
+.bgsw{aspect-ratio:4/3;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all .15s;}
+.bgsw:hover,.bgsw.on{border-color:#6c63ff;}
 
-/* Section divider */
-.sec-div{height:1px;background:var(--border);margin:14px 0;}
-.sec-label{font-size:10px;color:var(--muted);margin-bottom:8px;font-weight:500;}
+/* Divider */
+.div{height:1px;background:#2a2a38;margin:12px 0;}
 
-/* ── CANVAS AREA ── */
-.canvas-area{
-  flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;
-  padding:32px;background:#111118;
-}
-.canvas-area::-webkit-scrollbar{width:8px;height:8px;}
-.canvas-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+/* CANVAS */
+.canvas-wrap{flex:1;overflow:auto;background:#0d0d12;display:flex;align-items:flex-start;justify-content:center;padding:28px;}
+.canvas-wrap::-webkit-scrollbar{width:8px;height:8px;}
+.canvas-wrap::-webkit-scrollbar-thumb{background:#2a2a38;border-radius:99px;}
 
-.a4-wrap{position:relative;}
-.a4-zoom{display:flex;align-items:center;justify-content:center;}
+/* A4 */
+#a4{width:794px;min-height:1123px;background:#fff;position:relative;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.8);border-radius:2px;flex-shrink:0;}
 
-.a4{
-  width:794px;min-height:1123px;background:#fff;color:#1a1a1a;
-  position:relative;overflow:hidden;
-  box-shadow:0 24px 80px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.04);
-  font-family:'Outfit',sans-serif;
-}
-
-/* ── DRAGGABLE ELEMENTS ── */
-.el{
-  position:absolute;cursor:move;user-select:none;
-  outline:none;
-}
-.el.selected>.el-inner{outline:2px solid var(--accent);outline-offset:1px;}
+/* ELEMENTS */
+.el{position:absolute;cursor:move;}
+.el.sel .el-inner{outline:2px solid #6c63ff;outline-offset:2px;}
 .el-inner{width:100%;height:100%;position:relative;}
-.el-text{
-  padding:4px 6px;font-size:16px;line-height:1.5;
-  min-width:40px;min-height:24px;outline:none;cursor:text;
-  white-space:pre-wrap;word-break:break-word;
-}
+.el-txt{width:100%;height:100%;padding:4px 6px;font-size:15px;line-height:1.5;outline:none;white-space:pre-wrap;word-break:break-word;cursor:text;min-width:30px;min-height:20px;}
 .el-img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
-.el-shape{width:100%;height:100%;}
+.el-svg{width:100%;height:100%;overflow:visible;}
+.rh{position:absolute;width:10px;height:10px;background:#6c63ff;border:2px solid #fff;border-radius:2px;bottom:-5px;right:-5px;cursor:se-resize;z-index:10;display:none;}
+.dh{position:absolute;top:-11px;right:-11px;width:20px;height:20px;background:#f44;border:2px solid #fff;border-radius:50%;cursor:pointer;font-size:9px;color:#fff;display:none;align-items:center;justify-content:center;z-index:10;}
+.el.sel .rh{display:block;}
+.el.sel .dh{display:flex;}
 
-/* Resize handle */
-.resize-handle{
-  position:absolute;width:10px;height:10px;background:var(--accent);
-  border:2px solid #fff;border-radius:2px;bottom:-5px;right:-5px;cursor:se-resize;z-index:10;
-  opacity:0;
-}
-.el.selected .resize-handle{opacity:1;}
-.del-handle{
-  position:absolute;top:-12px;right:-12px;width:22px;height:22px;
-  background:#ff4444;border:2px solid #fff;border-radius:50%;
-  cursor:pointer;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;
-  opacity:0;z-index:10;
-}
-.el.selected .del-handle{opacity:1;}
+/* PROPS */
+.props{width:210px;background:#1a1a22;border-left:1px solid #2a2a38;padding:14px;overflow-y:auto;flex-shrink:0;}
+.props::-webkit-scrollbar{width:4px;}
+.props::-webkit-scrollbar-thumb{background:#2a2a38;border-radius:99px;}
+.prow{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;gap:7px;}
+.plbl{font-size:11px;color:#666;flex-shrink:0;}
+.pinput{flex:1;background:#222;border:1px solid #2a2a38;border-radius:6px;padding:5px 7px;color:#eee;font-size:11px;text-align:right;font-family:'Outfit',sans-serif;outline:none;}
+.pinput:focus{border-color:#6c63ff;}
+.oslider{width:100%;-webkit-appearance:none;height:4px;border-radius:99px;background:#2a2a38;outline:none;cursor:pointer;margin-bottom:12px;}
+.oslider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#6c63ff;cursor:pointer;border:2px solid #fff;}
+.lbtns{display:flex;gap:4px;flex-wrap:wrap;}
+.lbtn{flex:1;min-width:55px;padding:6px 4px;border-radius:6px;border:1px solid #2a2a38;background:#222;color:#ccc;font-size:10px;cursor:pointer;text-align:center;transition:all .15s;font-family:'Outfit',sans-serif;}
+.lbtn:hover{border-color:#6c63ff;color:#6c63ff;}
+.lbtn.red:hover{border-color:#f44;color:#f44;}
+.empty-props{font-size:11px;color:#444;text-align:center;margin-top:40px;line-height:1.7;}
 
-/* ── BG PANEL ── */
-.bg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
-.bg-swatch{
-  aspect-ratio:4/3;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all .15s;
-}
-.bg-swatch:hover,.bg-swatch.active{border-color:var(--accent);}
-
-/* ── RIGHT PROPERTIES ── */
-.props-panel{
-  width:220px;background:var(--panel);border-left:1px solid var(--border);
-  padding:14px;overflow-y:auto;flex-shrink:0;
-}
-.props-panel::-webkit-scrollbar{width:4px;}
-.props-panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
-.props-title{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:12px;}
-.prop-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;}
-.prop-label{font-size:12px;color:var(--muted);flex-shrink:0;}
-.prop-input{
-  flex:1;background:var(--panel2);border:1px solid var(--border);border-radius:6px;
-  padding:5px 8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;text-align:right;
-}
-.prop-input:focus{outline:none;border-color:var(--accent);}
-.opacity-slider{
-  width:100%;-webkit-appearance:none;height:4px;border-radius:99px;
-  background:var(--border);outline:none;cursor:pointer;
-}
-.opacity-slider::-webkit-slider-thumb{
-  -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
-  background:var(--accent);cursor:pointer;border:2px solid #fff;
-}
-.layer-btns{display:flex;gap:4px;flex-wrap:wrap;}
-.layer-btn{
-  flex:1;min-width:60px;padding:6px 4px;border-radius:6px;border:1px solid var(--border);
-  background:var(--panel2);color:var(--text);font-size:11px;cursor:pointer;transition:all .15s;text-align:center;
-}
-.layer-btn:hover{border-color:var(--accent);color:var(--accent);}
-
-/* Toast */
-.toast{
-  position:fixed;bottom:24px;right:24px;background:var(--panel);
-  border:1px solid var(--border);border-left:3px solid var(--accent);
-  color:var(--text);padding:11px 16px;border-radius:9px;font-size:12px;
-  z-index:9999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;
-}
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:#1a1a22;border:1px solid #2a2a38;border-left:3px solid #6c63ff;color:#eee;padding:10px 15px;border-radius:9px;font-size:12px;z-index:9999;opacity:0;transform:translateY(6px);transition:all .25s;pointer-events:none;}
 .toast.show{opacity:1;transform:translateY(0);}
 
-/* Template modal */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
-  z-index:500;display:flex;align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity .2s;
-}
-.modal-overlay.show{opacity:1;pointer-events:all;}
-.modal{
-  background:var(--panel);border:1px solid var(--border);border-radius:16px;
-  width:700px;max-height:80vh;overflow-y:auto;padding:28px;
-}
-.modal-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:20px;}
-.modal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
-.modal-tpl{
-  background:var(--panel2);border:2px solid var(--border);border-radius:12px;
-  padding:16px 10px;cursor:pointer;transition:all .2s;text-align:center;
-}
-.modal-tpl:hover{border-color:var(--accent);transform:translateY(-2px);}
-.modal-tpl .mi{font-size:28px;margin-bottom:8px;}
-.modal-tpl .mn{font-size:12px;font-weight:600;color:var(--text);}
-.modal-tpl .ms{font-size:10px;color:var(--muted);margin-top:2px;}
-
 @media print{
-  .topbar,.sidebar-left,.panel-content,.props-panel{display:none!important;}
-  body{background:white;}
-  .canvas-area{padding:0;background:white;}
-  .a4{box-shadow:none;width:100%;min-height:auto;}
-  .el.selected>.el-inner{outline:none;}
-  .resize-handle,.del-handle{display:none!important;}
+  .topbar,.rail,.side,.props{display:none!important;}
+  body{background:#fff;}
+  .canvas-wrap{padding:0;background:#fff;}
+  #a4{box-shadow:none;width:100%;}
+  .el.sel .el-inner{outline:none;}
+  .rh,.dh{display:none!important;}
 }
 </style>
 </head>
 <body>
 
-<!-- TOP BAR -->
+<!-- TOPBAR -->
 <div class="topbar">
-  <div class="logo">Page<span>Craft</span></div>
-  <div class="topbar-sep"></div>
-  <button class="tb-btn" onclick="showTemplateModal()">📐 Şablon Seç</button>
-  <button class="tb-btn" onclick="addText()">T Metin Ekle</button>
-  <button class="tb-btn" onclick="clearAll()">🗑️ Temizle</button>
-  <div class="spacer"></div>
-  <button class="tb-btn" onclick="undoAction()">↩ Geri Al</button>
-  <button class="tb-btn primary" onclick="window.print()">🖨️ Yazdır / PDF</button>
+  <div class="logo">Page<b>Craft</b></div>
+  <div class="sep"></div>
+  <button class="tbtn" onclick="openTemplates()">📐 Şablonlar (25)</button>
+  <button class="tbtn" onclick="addTextEl('body')">T+ Metin</button>
+  <button class="tbtn" onclick="undoLast()">↩ Geri Al</button>
+  <button class="tbtn" onclick="clearCanvas()">🗑 Temizle</button>
+  <div class="sp"></div>
+  <button class="tbtn pri" onclick="window.print()">🖨️ Yazdır / PDF</button>
 </div>
 
-<div class="workspace">
-
-  <!-- ICON SIDEBAR -->
-  <div class="sidebar-left">
-    <div class="side-icon active" data-panel="templates" onclick="togglePanel('templates',this)" title="Şablonlar">
-      📐<span>Şablon</span>
-    </div>
-    <div class="side-icon" data-panel="text" onclick="togglePanel('text',this)" title="Metin">
-      T<span>Metin</span>
-    </div>
-    <div class="side-icon" data-panel="photos" onclick="togglePanel('photos',this)" title="Fotoğraf">
-      🖼️<span>Foto</span>
-    </div>
-    <div class="side-icon" data-panel="shapes" onclick="togglePanel('shapes',this)" title="Şekiller">
-      ◻<span>Şekil</span>
-    </div>
-    <div class="side-icon" data-panel="stickers" onclick="togglePanel('stickers',this)" title="Çıkartmalar">
-      ⭐<span>Etiket</span>
-    </div>
-    <div class="side-icon" data-panel="background" onclick="togglePanel('background',this)" title="Arkaplan">
-      🎨<span>Arkaplan</span>
-    </div>
-    <div class="side-icon" data-panel="fonts" onclick="togglePanel('fonts',this)" title="Yazı Tipi">
-      Aa<span>Yazı</span>
-    </div>
+<div class="main">
+  <!-- ICON RAIL -->
+  <div class="rail">
+    <div class="rail-btn on" id="rb_tpl" onclick="showPanel('tpl',this)" title="Şablonlar">📐<span>Şablon</span></div>
+    <div class="rail-btn" id="rb_txt" onclick="showPanel('txt',this)" title="Metin">T<span>Metin</span></div>
+    <div class="rail-btn" id="rb_img" onclick="showPanel('img',this)" title="Fotoğraf">🖼<span>Foto</span></div>
+    <div class="rail-btn" id="rb_shp" onclick="showPanel('shp',this)" title="Şekiller">◻<span>Şekil</span></div>
+    <div class="rail-btn" id="rb_stk" onclick="showPanel('stk',this)" title="Etiket">⭐<span>Etiket</span></div>
+    <div class="rail-btn" id="rb_bg" onclick="showPanel('bg',this)" title="Arkaplan">🎨<span>Arkaplan</span></div>
+    <div class="rail-btn" id="rb_fnt" onclick="showPanel('fnt',this)" title="Yazı">Aa<span>Yazı</span></div>
   </div>
 
-  <!-- PANEL CONTENT -->
-  <div class="panel-content" id="panelContent">
-    <div class="panel-inner" id="panelInner">
-      <!-- dynamically filled -->
-    </div>
+  <!-- SIDE PANEL -->
+  <div class="side" id="sidePanel">
+    <!-- filled by JS -->
   </div>
 
   <!-- A4 CANVAS -->
-  <div class="canvas-area" id="canvasArea">
-    <div class="a4-wrap">
-      <div class="a4" id="a4" onclick="deselectAll(event)">
-        <!-- elements added here -->
-      </div>
-    </div>
+  <div class="canvas-wrap" id="cw" onclick="deselect(event)">
+    <div id="a4"></div>
   </div>
 
-  <!-- RIGHT PROPS -->
-  <div class="props-panel" id="propsPanel">
-    <div class="props-title">Özellikler</div>
-    <div id="propsContent">
-      <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:40px;line-height:1.6;">
-        Bir eleman seçin<br>veya canvas'a ekleyin
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<!-- TEMPLATE MODAL -->
-<div class="modal-overlay" id="tplModal" onclick="hideTplModal(event)">
-  <div class="modal">
-    <div class="modal-title">📐 Şablon Seçin — 25 Format</div>
-    <div class="modal-grid" id="modalGrid"></div>
+  <!-- PROPS -->
+  <div class="props" id="props">
+    <div class="plabel">Özellikler</div>
+    <div class="empty-props" id="emptyProps">Bir eleman seçin</div>
+    <div id="propsFill" style="display:none"></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<!-- TEMPLATE MODAL -->
+<div id="tplModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;overflow:auto;padding:40px 20px;">
+  <div style="background:#1a1a22;border:1px solid #2a2a38;border-radius:14px;width:720px;max-width:100%;margin:0 auto;padding:24px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;">📐 Şablon Seçin — 25 Format</div>
+      <button onclick="closeTplModal()" style="background:#333;border:none;color:#aaa;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">✕ Kapat</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;" id="tplModalGrid"></div>
+  </div>
+</div>
+
 <script>
-// ─────────────────────────────────────────────
-// STATE
-// ─────────────────────────────────────────────
-let elements = [];
-let selectedEl = null;
-let undoStack = [];
-let photos = [];
-let currentPanel = 'templates';
-let elCounter = 0;
-let isDragging = false;
-let isResizing = false;
-let dragOffset = {x:0,y:0};
-let resizeStart = {};
+// ===== STATE =====
+var els = [];
+var selId = null;
+var undoStack = [];
+var photos = [];
+var elCount = 0;
+var dragging = false;
+var resizing = false;
+var dragOff = {x:0,y:0};
+var resStart = {x:0,y:0,w:0,h:0};
+var currentPanel = 'tpl';
 
-const a4 = document.getElementById('a4');
+var A4 = document.getElementById('a4');
 
-// ─────────────────────────────────────────────
-// 25 TEMPLATES
-// ─────────────────────────────────────────────
-const TEMPLATES = [
-  {id:'blank',icon:'⬜',name:'Boş Sayfa',desc:'Sıfırdan başla',fn:tplBlank},
-  {id:'summary',icon:'📝',name:'Özet Yazısı',desc:'Paragraf + başlık',fn:tplSummary},
-  {id:'bullets',icon:'📋',name:'Madde Madde',desc:'Kategorili liste',fn:tplBullets},
-  {id:'mindmap',icon:'🧠',name:'Beyin Haritası',desc:'Merkez + dallar',fn:tplMindmap},
-  {id:'report',icon:'📊',name:'Resmi Rapor',desc:'Bölümlü rapor',fn:tplReport},
-  {id:'table',icon:'📐',name:'Tablo',desc:'Satır/sütun tablosu',fn:tplTable},
-  {id:'notes',icon:'🗒️',name:'Defter Notu',desc:'Çizgili defter',fn:tplNotes},
-  {id:'resume',icon:'👤',name:'CV / Özgeçmiş',desc:'İki sütunlu CV',fn:tplResume},
-  {id:'timeline',icon:'⏱️',name:'Zaman Çizelgesi',desc:'Kronolojik sıra',fn:tplTimeline},
-  {id:'cover',icon:'🎨',name:'Kapak Sayfası',desc:'Büyük başlık',fn:tplCover},
-  {id:'invoice',icon:'🧾',name:'Fatura',desc:'Profesyonel fatura',fn:tplInvoice},
-  {id:'poster',icon:'📌',name:'Afiş',desc:'Büyük görsel afiş',fn:tplPoster},
-  {id:'recipe',icon:'🍳',name:'Tarif Kartı',desc:'Yemek tarifi',fn:tplRecipe},
-  {id:'flyer',icon:'📢',name:'El İlanı',desc:'Duyuru bildirimi',fn:tplFlyer},
-  {id:'newsletter',icon:'📰',name:'Haber Bülteni',desc:'İki sütun bülten',fn:tplNewsletter},
-  {id:'certificate',icon:'🏆',name:'Sertifika',desc:'Ödül belgesi',fn:tplCertificate},
-  {id:'quiz',icon:'❓',name:'Sınav / Test',desc:'Soru-cevap formu',fn:tplQuiz},
-  {id:'schedule',icon:'📅',name:'Program / Takvim',desc:'Haftalık plan',fn:tplSchedule},
-  {id:'proposal',icon:'💼',name:'Proje Teklifi',desc:'İş teklifnamesi',fn:tplProposal},
-  {id:'journal',icon:'📖',name:'Günlük / Ajanda',desc:'Kişisel günlük',fn:tplJournal},
-  {id:'comparison',icon:'⚖️',name:'Karşılaştırma',desc:'Artı/eksi tablosu',fn:tplComparison},
-  {id:'swot',icon:'🔷',name:'SWOT Analizi',desc:'4 kuadrant analiz',fn:tplSwot},
-  {id:'kanban',icon:'🗂️',name:'Kanban Panosu',desc:'To-do/Yapılıyor/Bitti',fn:tplKanban},
-  {id:'infographic',icon:'📈',name:'Infografik',desc:'Veri görselleştirme',fn:tplInfogr},
-  {id:'moodboard',icon:'✨',name:'Mood Board',desc:'İlham panosu',fn:tplMoodboard},
-];
-
-// ─────────────────────────────────────────────
-// PANEL SYSTEM
-// ─────────────────────────────────────────────
-const panelRenderers = {
-  templates: renderTemplatePanel,
-  text: renderTextPanel,
-  photos: renderPhotosPanel,
-  shapes: renderShapesPanel,
-  stickers: renderStickersPanel,
-  background: renderBgPanel,
-  fonts: renderFontsPanel,
-};
-
-function togglePanel(name, icon) {
-  document.querySelectorAll('.side-icon').forEach(i=>i.classList.remove('active'));
-  icon.classList.add('active');
+// ===== PANEL SYSTEM =====
+function showPanel(name, btn) {
   currentPanel = name;
-  const pc = document.getElementById('panelContent');
-  pc.classList.remove('hidden');
-  panelRenderers[name]();
+  document.querySelectorAll('.rail-btn').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  renderPanel(name);
 }
 
-function renderTemplatePanel() {
-  const inn = document.getElementById('panelInner');
-  inn.innerHTML = `<div class="panel-title">Şablonlar</div>
-  <div class="tpl-grid">` +
-  TEMPLATES.map(t=>`<div class="tpl-card" onclick="applyTemplate('${t.id}')">
-    <div class="tpl-icon">${t.icon}</div>
-    <div class="tpl-name">${t.name}</div>
-  </div>`).join('') + `</div>`;
-}
-
-function renderTextPanel() {
-  document.getElementById('panelInner').innerHTML = `
-  <div class="panel-title">Metin Ekle</div>
-  <div style="display:flex;flex-direction:column;gap:8px;">
-    <div class="tpl-card" style="text-align:left;padding:12px;" onclick="addText('heading')">
-      <div style="font-size:20px;font-weight:800;color:#1a1a1a;font-family:'Playfair Display',serif;">Büyük Başlık</div>
-      <div style="font-size:10px;color:var(--muted);">32px · Playfair</div>
-    </div>
-    <div class="tpl-card" style="text-align:left;padding:12px;" onclick="addText('subheading')">
-      <div style="font-size:16px;font-weight:700;color:#1a1a1a;">Alt Başlık</div>
-      <div style="font-size:10px;color:var(--muted);">18px · Outfit Bold</div>
-    </div>
-    <div class="tpl-card" style="text-align:left;padding:12px;" onclick="addText('body')">
-      <div style="font-size:13px;color:#2a2a2a;">Normal paragraf metni burada yer alır.</div>
-      <div style="font-size:10px;color:var(--muted);">14px · Regular</div>
-    </div>
-    <div class="tpl-card" style="text-align:left;padding:12px;" onclick="addText('caption')">
-      <div style="font-size:11px;color:#888;">Açıklama / Caption metni</div>
-      <div style="font-size:10px;color:var(--muted);">11px · Light</div>
-    </div>
-    <div class="tpl-card" style="text-align:left;padding:12px;" onclick="addText('quote')">
-      <div style="font-size:15px;font-style:italic;color:#555;font-family:'Playfair Display',serif;">"Alıntı metni buraya"</div>
-      <div style="font-size:10px;color:var(--muted);">Italic · Playfair</div>
-    </div>
-    <div class="tpl-card" style="text-align:left;padding:12px;" onclick="addText('mono')">
-      <div style="font-size:12px;font-family:'DM Mono',monospace;color:#2a2a2a;">Kod / Mono metin</div>
-      <div style="font-size:10px;color:var(--muted);">12px · Monospace</div>
-    </div>
-  </div>`;
-}
-
-function renderPhotosPanel() {
-  document.getElementById('panelInner').innerHTML = `
-  <div class="panel-title">Fotoğraflar</div>
-  <div class="photo-drop" id="photoDrop">
-    <input type="file" accept="image/*" multiple onchange="handlePhotoUpload(this.files)" />
-    <div style="font-size:28px;margin-bottom:6px;">📷</div>
-    <div style="font-size:12px;color:var(--muted);">Fotoğraf ekle veya<br><strong style="color:var(--accent)">sürükle bırak</strong></div>
-  </div>
-  <div class="photo-grid" id="photoGrid"></div>`;
-  renderPhotoGrid();
-  setupPhotoDrop();
-}
-
-function renderShapesPanel() {
-  const shapes = [
-    {s:'rect',l:'▬',n:'Dikdörtgen'},{s:'circle',l:'●',n:'Daire'},
-    {s:'triangle',l:'▲',n:'Üçgen'},{s:'diamond',l:'◆',n:'Elmas'},
-    {s:'star',l:'★',n:'Yıldız'},{s:'arrow',l:'➤',n:'Ok'},
-    {s:'line',l:'━',n:'Çizgi'},{s:'hr',l:'═',n:'Çift Çizgi'},
-    {s:'rounded',l:'▣',n:'Yuvarlatılmış'},{s:'hexagon',l:'⬡',n:'Altıgen'},
-    {s:'speech',l:'💬',n:'Konuşma Balonu'},{s:'bracket',l:'[ ]',n:'Parantez'},
-  ];
-  document.getElementById('panelInner').innerHTML = `
-  <div class="panel-title">Şekiller</div>
-  <div class="shape-grid">` +
-  shapes.map(sh=>`<div class="shape-btn" title="${sh.n}" onclick="addShape('${sh.s}')">${sh.l}</div>`).join('') +
-  `</div>
-  <div class="sec-div"></div>
-  <div class="sec-label">Renk</div>
-  <div class="color-grid" id="shapeColorGrid"></div>
-  <div class="color-custom">
-    <input type="color" id="shapeColorPicker" value="#6c63ff" onchange="applyShapeColor(this.value)"/>
-    <input type="text" id="shapeColorHex" value="#6c63ff" onchange="applyShapeColor(this.value)"/>
-  </div>`;
-  renderColorGrid('shapeColorGrid', applyShapeColor);
-}
-
-function renderStickersPanel() {
-  const stickers = ['⭐','🔥','💡','✅','❌','⚠️','🎯','📌','🔑','💎','🚀','🌟','💪','🎉','📊','🔍','💬','🏆','✨','🎨','📝','🔔','💼','🌈','🎭','👍','❤️','🌙','☀️','⚡'];
-  document.getElementById('panelInner').innerHTML = `
-  <div class="panel-title">Çıkartmalar & Emoji</div>
-  <div class="sticker-grid">` +
-  stickers.map(s=>`<div class="sticker-btn" onclick="addSticker('${s}')">${s}</div>`).join('') +
-  `</div>`;
-}
-
-function renderBgPanel() {
-  const bgs = [
-    {label:'Beyaz',style:'background:#fff;'},
-    {label:'Krem',style:'background:#faf8f3;'},
-    {label:'Açık Gri',style:'background:#f5f5f5;'},
-    {label:'Lacivert',style:'background:#1a1a2e;'},
-    {label:'Koyu',style:'background:#111;'},
-    {label:'Yeşil',style:'background:#1a472a;'},
-    {label:'Kırmızı',style:'background:#7b0000;'},
-    {label:'Sarı',style:'background:#fffde7;'},
-    {label:'Mavi',style:'background:#e3f2fd;'},
-    {label:'Gül',style:'background:#fce4ec;'},
-    {label:'Çizgili',style:'background:#fff;background-image:repeating-linear-gradient(0deg,transparent,transparent 27px,#e0e0e0 28px);'},
-    {label:'Kareli',style:'background:#fff;background-image:linear-gradient(#e5e5e5 1px,transparent 1px),linear-gradient(90deg,#e5e5e5 1px,transparent 1px);background-size:28px 28px;'},
-    {label:'Noktalı',style:'background:#fff;background-image:radial-gradient(circle,#ccc 1px,transparent 1px);background-size:20px 20px;'},
-    {label:'Turuncu Grad',style:'background:linear-gradient(135deg,#ff6584,#ff8c42);'},
-    {label:'Mor Grad',style:'background:linear-gradient(135deg,#6c63ff,#a855f7);'},
-    {label:'Yeşil Grad',style:'background:linear-gradient(135deg,#11998e,#38ef7d);'},
-    {label:'Gün Batımı',style:'background:linear-gradient(135deg,#f093fb,#f5576c);'},
-    {label:'Okyanus',style:'background:linear-gradient(135deg,#2193b0,#6dd5ed);'},
-  ];
-  document.getElementById('panelInner').innerHTML = `
-  <div class="panel-title">Arkaplan</div>
-  <div class="bg-grid">` +
-  bgs.map((b,i)=>`<div class="bg-swatch" style="${b.style}" title="${b.label}" onclick="applyBg(${i})" data-bg="${i}"></div>`).join('') +
-  `</div>
-  <div class="color-custom">
-    <input type="color" value="#ffffff" onchange="a4.style.background=this.value"/>
-    <input type="text" placeholder="#ffffff" onchange="a4.style.background=this.value"/>
-  </div>`;
-
-  // store bgs for application
-  window._bgs = bgs;
-}
-
-function renderFontsPanel() {
-  document.getElementById('panelInner').innerHTML = `
-  <div class="panel-title">Yazı Stili</div>
-  <div class="sec-label">Yazı Tipi</div>
-  <div class="font-row">
-    <select class="font-sel" onchange="applyFontFamily(this.value)">
-      <option value="'Outfit',sans-serif">Outfit</option>
-      <option value="'Playfair Display',serif">Playfair Display</option>
-      <option value="'Syne',sans-serif">Syne</option>
-      <option value="'DM Mono',monospace">DM Mono</option>
-      <option value="Georgia,serif">Georgia</option>
-      <option value="'Times New Roman',serif">Times New Roman</option>
-      <option value="'Courier New',monospace">Courier New</option>
-    </select>
-  </div>
-  <div class="sec-label">Boyut</div>
-  <div class="font-row">
-    <select class="size-sel" onchange="applyFontSize(this.value)">
-      ${[8,9,10,11,12,13,14,16,18,20,22,24,28,32,36,42,48,56,64,72,80,96].map(s=>`<option value="${s}px" ${s===16?'selected':''}>${s}</option>`).join('')}
-    </select>
-    <div class="style-btns">
-      <button class="style-btn" onclick="applyBold()" title="Kalın"><b>B</b></button>
-      <button class="style-btn" onclick="applyItalic()" title="İtalik"><i>I</i></button>
-      <button class="style-btn" onclick="applyUnderline()" title="Altı Çizili"><u>U</u></button>
-    </div>
-  </div>
-  <div class="sec-label">Hizalama</div>
-  <div class="align-btns">
-    <button class="align-btn" onclick="applyAlign('left')" title="Sol">⬛</button>
-    <button class="align-btn" onclick="applyAlign('center')" title="Orta">⬜</button>
-    <button class="align-btn" onclick="applyAlign('right')" title="Sağ">⬛</button>
-    <button class="align-btn" onclick="applyAlign('justify')" title="Yasla">⬛</button>
-  </div>
-  <div class="sec-label">Renk</div>
-  <div class="color-grid" id="fontColorGrid"></div>
-  <div class="color-custom">
-    <input type="color" id="fontColorPicker" value="#1a1a1a" onchange="applyTextColor(this.value)"/>
-    <input type="text" id="fontColorHex" value="#1a1a1a" onchange="applyTextColor(this.value)"/>
-  </div>
-  <div class="sec-label" style="margin-top:10px;">Arkaplan Rengi</div>
-  <div class="color-custom">
-    <input type="color" id="textBgPicker" value="#ffffff" onchange="applyTextBg(this.value)"/>
-    <input type="text" placeholder="Şeffaf için boş bırak" onchange="applyTextBg(this.value)"/>
-  </div>`;
-  renderColorGrid('fontColorGrid', applyTextColor);
-}
-
-function renderColorGrid(id, fn) {
-  const colors = ['#1a1a1a','#ffffff','#6c63ff','#ff6584','#f5c842','#38ef7d','#2193b0','#f5576c','#11998e','#e65100','#7b1fa2','#1a472a'];
-  const el = document.getElementById(id);
-  if(el) el.innerHTML = colors.map(c=>`<div class="c-dot" style="background:${c}" onclick="fn_${id}('${c}')"></div>`).join('');
-  window[`fn_${id}`] = fn;
-}
-
-// ─────────────────────────────────────────────
-// ELEMENT SYSTEM
-// ─────────────────────────────────────────────
-function createElement(type, opts={}) {
-  saveUndo();
-  const id = 'el_' + (++elCounter);
-  const el = {
-    id, type,
-    x: opts.x ?? 60,
-    y: opts.y ?? 60,
-    w: opts.w ?? 200,
-    h: opts.h ?? 60,
-    content: opts.content ?? '',
-    style: opts.style ?? {},
-    shapeType: opts.shapeType ?? null,
-    imgSrc: opts.imgSrc ?? null,
-    zIndex: elements.length + 1,
-  };
-  elements.push(el);
-  renderElement(el);
-  return el;
-}
-
-function renderElement(el) {
-  const existing = document.getElementById(el.id);
-  if(existing) existing.remove();
-
-  const div = document.createElement('div');
-  div.className = 'el';
-  div.id = el.id;
-  div.style.left = el.x + 'px';
-  div.style.top = el.y + 'px';
-  div.style.width = el.w + 'px';
-  div.style.height = el.h + 'px';
-  div.style.zIndex = el.zIndex;
-
-  const inner = document.createElement('div');
-  inner.className = 'el-inner';
-
-  if(el.type === 'text') {
-    const t = document.createElement('div');
-    t.className = 'el-text';
-    t.contentEditable = 'true';
-    t.innerHTML = el.content;
-    Object.assign(t.style, el.style);
-    t.addEventListener('input', ()=>{el.content=t.innerHTML;});
-    t.addEventListener('mousedown', e=>e.stopPropagation());
-    inner.appendChild(t);
-  } else if(el.type === 'image') {
-    const img = document.createElement('img');
-    img.className = 'el-img';
-    img.src = el.imgSrc;
-    inner.appendChild(img);
-  } else if(el.type === 'shape') {
-    const s = buildShape(el);
-    inner.appendChild(s);
-  } else if(el.type === 'sticker') {
-    const s = document.createElement('div');
-    s.style.cssText = `font-size:${el.h*0.7}px;display:flex;align-items:center;justify-content:center;width:100%;height:100%;`;
-    s.textContent = el.content;
-    inner.appendChild(s);
+function renderPanel(name) {
+  var sp = document.getElementById('sidePanel');
+  var html = '';
+  if(name==='tpl') {
+    html = '<div class="pblock"><div class="plabel">Şablonlar</div><div class="tgrid">' +
+      TEMPLATES.map(function(t){
+        return '<div class="tcard" onclick="applyTpl(\''+t.id+'\')"><div class="tcard-icon">'+t.icon+'</div><div class="tcard-name">'+t.name+'</div></div>';
+      }).join('') + '</div></div>';
+  } else if(name==='txt') {
+    html = '<div class="pblock"><div class="plabel">Metin Ekle</div>' +
+      [['heading','Büyük Başlık','36px, Kalın'],['sub','Alt Başlık','20px, Orta'],['body','Paragraf','14px, Normal'],['caption','Açıklama','11px, Hafif'],['quote','"Alıntı"','16px, İtalik'],['num','1. Numaralı','14px, Liste']].map(function(v){
+        return '<div class="tcard" style="text-align:left;padding:10px 12px;margin-bottom:7px;" onclick="addTextEl(\''+v[0]+'\')"><div style="font-weight:600;color:#eee;font-size:13px;">'+v[1]+'</div><div style="font-size:10px;color:#555;margin-top:2px;">'+v[2]+'</div></div>';
+      }).join('') + '</div>';
+  } else if(name==='img') {
+    html = '<div class="pblock"><div class="plabel">Fotoğraflar</div>' +
+      '<div class="drop-area" id="dropArea"><input type="file" accept="image/*" multiple onchange="uploadPhotos(this.files)"><div style="font-size:28px;margin-bottom:6px;">📷</div><div style="font-size:12px;color:#666;">Fotoğraf ekle veya<br><b style="color:#6c63ff">sürükle bırak</b></div></div>' +
+      '<div class="pgrid" id="photoGrid"></div></div>';
+  } else if(name==='shp') {
+    var shapes = [['rect','▬'],['circle','●'],['triangle','▲'],['diamond','◆'],['star','★'],['line','━'],['rounded','▣'],['hexagon','⬡'],['arrow','➤'],['hr','═'],['wave','〜'],['plus','✚']];
+    html = '<div class="pblock"><div class="plabel">Şekiller</div><div class="sgrid">' +
+      shapes.map(function(s){return '<div class="sshape" onclick="addShape(\''+s[0]+\')">'+s[1]+'</div>';}).join('') +
+      '</div><div class="div"></div><div class="plabel">Renk</div><div class="crow">' +
+      ['#6c63ff','#ff6584','#f5c842','#38ef7d','#2193b0','#1a1a2e','#fff','#f44','#ff8c42','#a855f7','#11998e','#e65100'].map(function(c){
+        return '<div class="cdot" style="background:'+c+'" onclick="applyShapeColor(\''+c+'\')"></div>';
+      }).join('') +
+      '</div><div class="cinput"><input type="color" value="#6c63ff" oninput="applyShapeColor(this.value)"><input type="text" value="#6c63ff" placeholder="#renk" oninput="applyShapeColor(this.value)"></div></div>';
+  } else if(name==='stk') {
+    var stks = ['⭐','🔥','💡','✅','❌','⚠️','🎯','📌','🔑','💎','🚀','🌟','💪','🎉','🏆','✨','🎨','📝','🔔','💼','👍','❤️','🌙','☀️','⚡','🎭','🌈','💬','🔍','📊'];
+    html = '<div class="pblock"><div class="plabel">Çıkartmalar</div><div class="emgrid">' +
+      stks.map(function(s){return '<div class="embtn" onclick="addSticker(\''+s+'\')">'+s+'</div>';}).join('') + '</div></div>';
+  } else if(name==='bg') {
+    var bgs = [
+      {s:'background:#fff',l:'Beyaz'},{s:'background:#faf8f3',l:'Krem'},{s:'background:#f0f0f5',l:'Gri'},
+      {s:'background:#1a1a2e',l:'Lacivert'},{s:'background:#111',l:'Siyah'},{s:'background:#fffde7',l:'Sarı'},
+      {s:'background:linear-gradient(135deg,#6c63ff,#a855f7)',l:'Mor'},{s:'background:linear-gradient(135deg,#ff6584,#ff8c42)',l:'Turuncu'},
+      {s:'background:linear-gradient(135deg,#11998e,#38ef7d)',l:'Yeşil'},{s:'background:linear-gradient(135deg,#2193b0,#6dd5ed)',l:'Mavi'},
+      {s:'background:#fff;background-image:repeating-linear-gradient(0deg,transparent,transparent 27px,#ddd 28px)',l:'Çizgili'},
+      {s:'background:#fff;background-image:linear-gradient(#e5e5e5 1px,transparent 1px),linear-gradient(90deg,#e5e5e5 1px,transparent 1px);background-size:28px 28px',l:'Kareli'},
+    ];
+    html = '<div class="pblock"><div class="plabel">Arkaplan</div><div class="bggrid">' +
+      bgs.map(function(b,i){return '<div class="bgsw" style="'+b.s+'" title="'+b.l+'" onclick="applyBg('+i+')"></div>';}).join('') +
+      '</div><div class="cinput" style="margin-top:4px;"><input type="color" value="#ffffff" oninput="A4.style.background=this.value"><input type="text" placeholder="#ffffff veya renk" oninput="A4.style.background=this.value"></div></div>';
+    window._bgs = bgs;
+  } else if(name==='fnt') {
+    html = '<div class="pblock"><div class="plabel">Yazı Tipi</div>' +
+      '<select class="sselect" style="margin-bottom:8px;" onchange="applyFF(this.value)">' +
+      ["'Outfit',sans-serif","'Syne',sans-serif","Georgia,serif","'Times New Roman',serif","'Courier New',monospace","Arial,sans-serif","Verdana,sans-serif"].map(function(f){
+        return '<option value="'+f+'">'+f.split(',')[0].replace(/'/g,'')+'</option>';}).join('') +
+      '</select>' +
+      '<div class="plabel">Boyut</div>' +
+      '<select class="sselect" style="margin-bottom:8px;" onchange="applyFS(this.value)">' +
+      [8,10,11,12,13,14,16,18,20,22,24,28,32,36,40,48,56,64,72,80,96].map(function(s){return '<option value="'+s+'px"'+(s===14?' selected':'')+'>'+s+'</option>';}).join('') +
+      '</select>' +
+      '<div class="plabel">Stil</div>' +
+      '<div class="sbtns">' +
+      '<button class="sbtn" onclick="applyBold()" title="Kalın"><b>B</b></button>' +
+      '<button class="sbtn" onclick="applyItalic()" title="İtalik"><i>I</i></button>' +
+      '<button class="sbtn" onclick="applyUnderline()" title="Altı Çizili"><u>U</u></button>' +
+      '</div>' +
+      '<div class="plabel">Hizala</div>' +
+      '<div class="abtns">' +
+      '<button class="abtn" onclick="applyAlign(\'left\')" title="Sol">≡</button>' +
+      '<button class="abtn" onclick="applyAlign(\'center\')" title="Orta">≡</button>' +
+      '<button class="abtn" onclick="applyAlign(\'right\')" title="Sağ">≡</button>' +
+      '</div>' +
+      '<div class="plabel">Yazı Rengi</div>' +
+      '<div class="crow">' +
+      ['#1a1a1a','#fff','#6c63ff','#ff6584','#f5c842','#38ef7d','#2193b0','#f44','#888','#000','#a855f7','#e65100'].map(function(c){
+        return '<div class="cdot" style="background:'+c+';'+(c==='#fff'?'border:1px solid #333;':'')+'" onclick="applyTC(\''+c+'\')"></div>';
+      }).join('')+'</div>' +
+      '<div class="cinput"><input type="color" value="#1a1a1a" oninput="applyTC(this.value)"><input type="text" value="#1a1a1a" oninput="applyTC(this.value)"></div>' +
+      '</div>';
   }
-
-  // Resize handle
-  const rh = document.createElement('div');
-  rh.className = 'resize-handle';
-  rh.addEventListener('mousedown', startResize);
-  inner.appendChild(rh);
-
-  // Delete handle
-  const dh = document.createElement('div');
-  dh.className = 'del-handle';
-  dh.innerHTML = '✕';
-  dh.addEventListener('mousedown', e=>{e.stopPropagation();deleteEl(el.id);});
-  inner.appendChild(dh);
-
-  div.appendChild(inner);
-  div.addEventListener('mousedown', startDrag);
-  a4.appendChild(div);
+  sp.innerHTML = html;
+  if(name==='img') {
+    setupDrop();
+    renderPhotoGrid();
+  }
 }
 
-function buildShape(el) {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-  svg.setAttribute('width','100%');svg.setAttribute('height','100%');
-  svg.style.overflow = 'visible';
-  const color = el.style.fill || '#6c63ff';
-  const st = el.style.stroke || 'none';
-
-  const shapes = {
-    rect: `<rect x="1" y="1" width="98%" height="98%" rx="0" fill="${color}" stroke="${st}" stroke-width="2"/>`,
-    rounded: `<rect x="1" y="1" width="98%" height="98%" rx="12" fill="${color}" stroke="${st}" stroke-width="2"/>`,
-    circle: `<ellipse cx="50%" cy="50%" rx="49%" ry="49%" fill="${color}" stroke="${st}" stroke-width="2"/>`,
-    triangle: `<polygon points="50%,2 99%,98% 1%,98%" fill="${color}" stroke="${st}" stroke-width="2"/>`,
-    diamond: `<polygon points="50%,2 98%,50% 50%,98% 2%,50%" fill="${color}" stroke="${st}" stroke-width="2"/>`,
-    star: `<polygon points="50%,5% 61%,35% 98%,35% 68%,57% 79%,91% 50%,70% 21%,91% 32%,57% 2%,35% 39%,35%" fill="${color}" stroke="${st}" stroke-width="1"/>`,
-    arrow: `<polygon points="60%,15% 98%,50% 60%,85% 60%,65% 2%,65% 2%,35% 60%,35%" fill="${color}" stroke="${st}" stroke-width="1"/>`,
-    line: `<line x1="0" y1="50%" x2="100%" y2="50%" stroke="${color}" stroke-width="${el.style.strokeWidth||3}"/>`,
-    hr: `<line x1="0" y1="40%" x2="100%" y2="40%" stroke="${color}" stroke-width="2"/><line x1="0" y1="60%" x2="100%" y2="60%" stroke="${color}" stroke-width="2"/>`,
-    hexagon: `<polygon points="25%,2% 75%,2% 98%,50% 75%,98% 25%,98% 2%,50%" fill="${color}" stroke="${st}" stroke-width="2"/>`,
-    speech: `<path d="M5%,5% Q5%,2% 8%,2% L92%,2% Q95%,2% 95%,5% L95%,75% Q95%,78% 92%,78% L40%,78% L25%,95% L30%,78% L8%,78% Q5%,78% 5%,75% Z" fill="${color}" stroke="${st}" stroke-width="1"/>`,
-    bracket: `<text x="10%" y="60%" font-size="80" fill="${color}" font-family="monospace">[ ]</text>`,
-  };
-
-  svg.innerHTML = shapes[el.shapeType] || shapes.rect;
-  return svg;
+// ===== PHOTOS =====
+function setupDrop() {
+  var da = document.getElementById('dropArea');
+  if(!da) return;
+  da.addEventListener('dragover',function(e){e.preventDefault();da.classList.add('ov');});
+  da.addEventListener('dragleave',function(){da.classList.remove('ov');});
+  da.addEventListener('drop',function(e){e.preventDefault();da.classList.remove('ov');uploadPhotos(e.dataTransfer.files);});
 }
-
-// ─────────────────────────────────────────────
-// DRAG & RESIZE
-// ─────────────────────────────────────────────
-function startDrag(e) {
-  if(e.target.classList.contains('resize-handle') || e.target.classList.contains('del-handle')) return;
-  const elDiv = e.currentTarget;
-  selectEl(elDiv.id);
-  if(e.target.contentEditable === 'true') return;
-  isDragging = true;
-  const rect = a4.getBoundingClientRect();
-  dragOffset.x = e.clientX - elDiv.offsetLeft;
-  dragOffset.y = e.clientY - elDiv.offsetTop;
-  e.preventDefault();
-  document.addEventListener('mousemove', onDrag);
-  document.addEventListener('mouseup', stopDrag);
-}
-
-function onDrag(e) {
-  if(!isDragging || !selectedEl) return;
-  const elDiv = document.getElementById(selectedEl);
-  if(!elDiv) return;
-  const el = elements.find(x=>x.id===selectedEl);
-  const a4rect = a4.getBoundingClientRect();
-  el.x = Math.max(0, e.clientX - dragOffset.x);
-  el.y = Math.max(0, e.clientY - dragOffset.y);
-  elDiv.style.left = el.x + 'px';
-  elDiv.style.top = el.y + 'px';
-  updateProps();
-}
-
-function stopDrag() {
-  isDragging = false;
-  document.removeEventListener('mousemove', onDrag);
-  document.removeEventListener('mouseup', stopDrag);
-}
-
-function startResize(e) {
-  e.stopPropagation();
-  isResizing = true;
-  const elDiv = document.getElementById(selectedEl);
-  resizeStart = {x:e.clientX, y:e.clientY, w:elDiv.offsetWidth, h:elDiv.offsetHeight};
-  document.addEventListener('mousemove', onResize);
-  document.addEventListener('mouseup', stopResize);
-}
-
-function onResize(e) {
-  if(!isResizing || !selectedEl) return;
-  const el = elements.find(x=>x.id===selectedEl);
-  const elDiv = document.getElementById(selectedEl);
-  el.w = Math.max(40, resizeStart.w + (e.clientX - resizeStart.x));
-  el.h = Math.max(20, resizeStart.h + (e.clientY - resizeStart.y));
-  elDiv.style.width = el.w + 'px';
-  elDiv.style.height = el.h + 'px';
-  updateProps();
-}
-
-function stopResize() {
-  isResizing = false;
-  document.removeEventListener('mousemove', onResize);
-  document.removeEventListener('mouseup', stopResize);
-}
-
-// ─────────────────────────────────────────────
-// SELECTION & PROPS
-// ─────────────────────────────────────────────
-function selectEl(id) {
-  deselectAll();
-  selectedEl = id;
-  const div = document.getElementById(id);
-  if(div) div.classList.add('selected');
-  updateProps();
-}
-
-function deselectAll(e) {
-  if(e && (e.target.closest('.el') || e.target.closest('.props-panel'))) return;
-  document.querySelectorAll('.el').forEach(d=>d.classList.remove('selected'));
-  selectedEl = null;
-  document.getElementById('propsContent').innerHTML = `<div style="font-size:12px;color:var(--muted);text-align:center;margin-top:40px;line-height:1.6;">Bir eleman seçin<br>veya canvas'a ekleyin</div>`;
-}
-
-function deleteEl(id) {
-  saveUndo();
-  elements = elements.filter(x=>x.id!==id);
-  const d = document.getElementById(id);
-  if(d) d.remove();
-  selectedEl = null;
-}
-
-function updateProps() {
-  if(!selectedEl) return;
-  const el = elements.find(x=>x.id===selectedEl);
-  if(!el) return;
-  document.getElementById('propsContent').innerHTML = `
-  <div class="prop-row"><span class="prop-label">X</span><input class="prop-input" type="number" value="${Math.round(el.x)}" onchange="moveTo('x',this.value)"/></div>
-  <div class="prop-row"><span class="prop-label">Y</span><input class="prop-input" type="number" value="${Math.round(el.y)}" onchange="moveTo('y',this.value)"/></div>
-  <div class="prop-row"><span class="prop-label">Genişlik</span><input class="prop-input" type="number" value="${Math.round(el.w)}" onchange="resizeTo('w',this.value)"/></div>
-  <div class="prop-row"><span class="prop-label">Yükseklik</span><input class="prop-input" type="number" value="${Math.round(el.h)}" onchange="resizeTo('h',this.value)"/></div>
-  <div class="prop-row"><span class="prop-label">Opaklık</span></div>
-  <input class="opacity-slider" type="range" min="0" max="100" value="${(el.style.opacity??1)*100}" oninput="applyOpacity(this.value)"/>
-  <div class="sec-div"></div>
-  <div style="font-size:10px;color:var(--muted);margin-bottom:8px;">KATMAN</div>
-  <div class="layer-btns">
-    <button class="layer-btn" onclick="bringFront()">Öne Al</button>
-    <button class="layer-btn" onclick="sendBack()">Arkaya Gönder</button>
-    <button class="layer-btn" onclick="duplicate()">Kopyala</button>
-    <button class="layer-btn" style="color:#ff4444;border-color:#ff4444;" onclick="deleteEl('${el.id}')">Sil</button>
-  </div>`;
-}
-
-function moveTo(axis, val) {
-  const el = elements.find(x=>x.id===selectedEl);
-  if(!el) return;
-  el[axis==='x'?'x':'y'] = +val;
-  const d = document.getElementById(selectedEl);
-  if(d) d.style[axis==='x'?'left':'top'] = val+'px';
-}
-function resizeTo(dim, val) {
-  const el = elements.find(x=>x.id===selectedEl);
-  if(!el) return;
-  el[dim] = +val;
-  const d = document.getElementById(selectedEl);
-  if(d) d.style[dim==='w'?'width':'height'] = val+'px';
-}
-function applyOpacity(v) {
-  const el = elements.find(x=>x.id===selectedEl);
-  if(!el) return;
-  el.style.opacity = v/100;
-  const d = document.getElementById(selectedEl);
-  if(d) d.style.opacity = v/100;
-}
-function bringFront() {
-  const el = elements.find(x=>x.id===selectedEl);
-  if(!el) return;
-  el.zIndex = Math.max(...elements.map(e=>e.zIndex))+1;
-  document.getElementById(selectedEl).style.zIndex = el.zIndex;
-}
-function sendBack() {
-  const el = elements.find(x=>x.id===selectedEl);
-  if(!el) return;
-  el.zIndex = Math.max(1, Math.min(...elements.map(e=>e.zIndex))-1);
-  document.getElementById(selectedEl).style.zIndex = el.zIndex;
-}
-function duplicate() {
-  const el = elements.find(x=>x.id===selectedEl);
-  if(!el) return;
-  createElement(el.type, {...el, x:el.x+20, y:el.y+20});
-}
-
-// ─────────────────────────────────────────────
-// ADD ELEMENTS
-// ─────────────────────────────────────────────
-function addText(variant='body') {
-  const variants = {
-    heading: {content:'Büyük Başlık', style:{fontSize:'32px',fontWeight:'900',fontFamily:"'Playfair Display',serif",color:'#1a1a1a'}, w:400, h:60},
-    subheading: {content:'Alt Başlık', style:{fontSize:'20px',fontWeight:'700',fontFamily:"'Outfit',sans-serif",color:'#1a1a1a'}, w:300, h:40},
-    body: {content:'Metninizi buraya yazın...', style:{fontSize:'14px',fontFamily:"'Outfit',sans-serif",color:'#2a2a2a',lineHeight:'1.7'}, w:320, h:80},
-    caption: {content:'Açıklama metni', style:{fontSize:'11px',color:'#888',fontFamily:"'Outfit',sans-serif"}, w:200, h:30},
-    quote: {content:'"Alıntı metni buraya gelir"', style:{fontSize:'16px',fontStyle:'italic',fontFamily:"'Playfair Display',serif",color:'#555'}, w:320, h:60},
-    mono: {content:'kod_veya_mono_metin', style:{fontSize:'12px',fontFamily:"'DM Mono',monospace",background:'#f5f5f5',padding:'8px',borderRadius:'4px'}, w:250, h:40},
-  };
-  const v = variants[variant] || variants.body;
-  const el = createElement('text', {content:v.content, style:v.style, w:v.w, h:v.h, x:60, y:60+elCounter*20});
-  selectEl(el.id);
-  showToast('✦ Metin eklendi — tıklayarak düzenle');
-}
-
-function addShape(type) {
-  const colors = {fill:'#6c63ff',stroke:'none'};
-  const el = createElement('shape', {shapeType:type, style:colors, w:120, h:80, x:80, y:80+elCounter*15});
-  selectEl(el.id);
-}
-
-function addSticker(emoji) {
-  const el = createElement('sticker', {content:emoji, w:60, h:60, x:100, y:100+elCounter*10});
-  selectEl(el.id);
-}
-
-function addImageEl(src) {
-  const el = createElement('image', {imgSrc:src, w:200, h:150, x:80, y:80});
-  selectEl(el.id);
-}
-
-// ─────────────────────────────────────────────
-// STYLE APPLIERS
-// ─────────────────────────────────────────────
-function applyToSelected(fn) {
-  if(!selectedEl) return;
-  const el = elements.find(x=>x.id===selectedEl);
-  if(!el) return;
-  const div = document.getElementById(selectedEl);
-  fn(el, div);
-}
-
-function applyTextColor(c) {
-  applyToSelected((el,div)=>{
-    el.style.color = c;
-    const t = div.querySelector('.el-text');
-    if(t) t.style.color = c;
-  });
-}
-function applyTextBg(c) {
-  applyToSelected((el,div)=>{
-    el.style.background = c;
-    const t = div.querySelector('.el-text');
-    if(t) t.style.background = c;
-  });
-}
-function applyFontFamily(f) {
-  applyToSelected((el,div)=>{
-    el.style.fontFamily = f;
-    const t = div.querySelector('.el-text');
-    if(t) t.style.fontFamily = f;
-  });
-}
-function applyFontSize(s) {
-  applyToSelected((el,div)=>{
-    el.style.fontSize = s;
-    const t = div.querySelector('.el-text');
-    if(t) t.style.fontSize = s;
-  });
-}
-function applyBold() {
-  applyToSelected((el,div)=>{
-    const t = div.querySelector('.el-text');
-    if(!t) return;
-    const cur = window.getComputedStyle(t).fontWeight;
-    const isBold = cur === '700' || cur === 'bold';
-    t.style.fontWeight = isBold ? '400' : '700';
-    el.style.fontWeight = isBold ? '400' : '700';
-  });
-}
-function applyItalic() {
-  applyToSelected((el,div)=>{
-    const t = div.querySelector('.el-text');
-    if(!t) return;
-    const cur = window.getComputedStyle(t).fontStyle;
-    t.style.fontStyle = cur==='italic' ? 'normal' : 'italic';
-    el.style.fontStyle = cur==='italic' ? 'normal' : 'italic';
-  });
-}
-function applyUnderline() {
-  applyToSelected((el,div)=>{
-    const t = div.querySelector('.el-text');
-    if(!t) return;
-    const cur = t.style.textDecoration;
-    t.style.textDecoration = cur==='underline' ? 'none' : 'underline';
-  });
-}
-function applyAlign(a) {
-  applyToSelected((el,div)=>{
-    const t = div.querySelector('.el-text');
-    if(t) { t.style.textAlign = a; el.style.textAlign = a; }
-  });
-}
-function applyShapeColor(c) {
-  applyToSelected((el,div)=>{
-    el.style.fill = c;
-    renderElement(el);
-    selectEl(el.id);
-  });
-}
-function applyBg(i) {
-  const bg = window._bgs[i];
-  if(!bg) return;
-  const style = bg.style.replace(/background:/g,'').split(';')[0].trim();
-  // apply all bg properties
-  a4.removeAttribute('style');
-  a4.style.cssText = bg.style;
-  a4.style.color = '#1a1a1a';
-  a4.style.minHeight = '1123px';
-  a4.style.width = '794px';
-  a4.style.position = 'relative';
-  a4.style.overflow = 'hidden';
-  a4.style.boxShadow = '0 24px 80px rgba(0,0,0,.7)';
-  a4.style.borderRadius = '3px';
-  document.querySelectorAll('.a4-wrap .el').forEach(d=>{/* keep */});
-  showToast('🎨 Arkaplan değiştirildi');
-}
-
-// ─────────────────────────────────────────────
-// PHOTOS
-// ─────────────────────────────────────────────
-function setupPhotoDrop() {
-  const pd = document.getElementById('photoDrop');
-  if(!pd) return;
-  pd.addEventListener('dragover', e=>{e.preventDefault();pd.classList.add('over');});
-  pd.addEventListener('dragleave', ()=>pd.classList.remove('over'));
-  pd.addEventListener('drop', e=>{
-    e.preventDefault();pd.classList.remove('over');
-    handlePhotoUpload(e.dataTransfer.files);
-  });
-}
-function handlePhotoUpload(files) {
-  Array.from(files).forEach(f=>{
-    const r = new FileReader();
-    r.onload = e=>{
-      photos.push(e.target.result);
-      renderPhotoGrid();
-      showToast('🖼️ Fotoğraf yüklendi — tıklayarak ekle');
-    };
+function uploadPhotos(files) {
+  Array.from(files).forEach(function(f){
+    var r = new FileReader();
+    r.onload = function(e){photos.push(e.target.result);renderPhotoGrid();toast('🖼 Fotoğraf eklendi — tıklayarak yerleştir');};
     r.readAsDataURL(f);
   });
 }
 function renderPhotoGrid() {
-  const g = document.getElementById('photoGrid');
+  var g = document.getElementById('photoGrid');
   if(!g) return;
-  g.innerHTML = photos.map((src,i)=>`
-  <div class="photo-thumb" onclick="addImageEl('${src}')">
-    <img src="${src}" />
-    <button class="del-btn" onclick="event.stopPropagation();photos.splice(${i},1);renderPhotoGrid()">✕</button>
-  </div>`).join('');
+  g.innerHTML = photos.map(function(src,i){
+    return '<div class="pthumb" onclick="addImgEl(\''+i+'\')">' +
+      '<img src="'+src+'">' +
+      '<button class="pdel" onclick="event.stopPropagation();photos.splice('+i+',1);renderPhotoGrid()">✕</button></div>';
+  }).join('');
 }
 
-// ─────────────────────────────────────────────
-// UNDO
-// ─────────────────────────────────────────────
-function saveUndo() {
-  undoStack.push(a4.innerHTML);
-  if(undoStack.length > 30) undoStack.shift();
-}
-function undoAction() {
-  if(!undoStack.length) return;
-  a4.innerHTML = undoStack.pop();
-  elements = [];
-  selectedEl = null;
-  // Rebind events for existing elements would need full re-render
-  showToast('↩ Geri alındı');
-}
-
-// ─────────────────────────────────────────────
-// TEMPLATES
-// ─────────────────────────────────────────────
-function applyTemplate(id) {
-  const t = TEMPLATES.find(x=>x.id===id);
-  if(t) { clearAll(true); t.fn(); }
-  hideTplModal();
-}
-
-function clearAll(silent) {
+// ===== CREATE ELEMENT =====
+function makeEl(type, cfg) {
   saveUndo();
-  elements = [];
-  elCounter = 0;
-  selectedEl = null;
-  a4.innerHTML = '';
-  a4.style.cssText = 'background:#fff;color:#1a1a1a;';
-  a4.style.width = '794px';
-  a4.style.minHeight = '1123px';
-  a4.style.position = 'relative';
-  a4.style.overflow = 'hidden';
-  a4.style.boxShadow = '0 24px 80px rgba(0,0,0,.7)';
-  a4.style.borderRadius = '3px';
-  if(!silent) showToast('🗑️ Temizlendi');
+  var id = 'e'+(++elCount);
+  var el = {id:id,type:type,x:cfg.x||60,y:cfg.y||60,w:cfg.w||200,h:cfg.h||50,cnt:cfg.cnt||'',style:cfg.style||{},shp:cfg.shp||null,imgIdx:cfg.imgIdx!=null?cfg.imgIdx:null,z:els.length+1};
+  els.push(el);
+  renderEl(el);
+  return el;
 }
 
-function addEl(type, opts) { return createElement(type, opts); }
-function tx(content, x, y, w, h, style) { return addEl('text',{content,x,y,w:w||300,h:h||40,style:style||{}}); }
+function renderEl(el) {
+  var old = document.getElementById(el.id);
+  if(old) old.remove();
 
-function tplBlank() { showToast('⬜ Boş sayfa — elemanlara tıklayarak başla'); }
+  var div = document.createElement('div');
+  div.className = 'el';
+  div.id = el.id;
+  div.style.left = el.x+'px';
+  div.style.top = el.y+'px';
+  div.style.width = el.w+'px';
+  div.style.height = el.h+'px';
+  div.style.zIndex = el.z;
 
-function tplSummary() {
-  a4.style.background = '#fff';
-  tx('<b>BAŞLIK BURAYA</b>', 60, 60, 670, 60, {fontSize:'30px',fontFamily:"'Playfair Display',serif",fontWeight:'900',color:'#1a1a1a'});
-  tx('Tarih · Yazar · Kaynak', 60, 128, 400, 28, {fontSize:'12px',color:'#999'});
-  addEl('shape',{shapeType:'line',x:60,y:162,w:670,h:6,style:{fill:'#1a1a2e'}});
-  tx('Birinci paragraf metni buraya gelir. Konuyu tanıtın ve temel bilgileri aktarın.', 60, 180, 670, 80, {fontSize:'14px',lineHeight:'1.8',color:'#2a2a2a'});
-  tx('İkinci paragraf detayları içerir. Ek bilgiler ve açıklamalar buraya yazılır.', 60, 270, 670, 80, {fontSize:'14px',lineHeight:'1.8',color:'#2a2a2a'});
-  tx('Sonuç ve değerlendirme burada yer alır.', 60, 360, 670, 60, {fontSize:'14px',lineHeight:'1.8',color:'#2a2a2a'});
-}
+  var inner = document.createElement('div');
+  inner.className = 'el-inner';
 
-function tplBullets() {
-  a4.style.background = '#fff';
-  tx('📋 MADDE MADDE', 60, 50, 600, 55, {fontSize:'26px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
-  addEl('shape',{shapeType:'rect',x:60,y:112,w:670,h:4,style:{fill:'#6c63ff'}});
-  const sections = [['BÖLÜM 1',['Madde bir içeriği','Madde iki içeriği','Madde üç içeriği']],['BÖLÜM 2',['Dördüncü madde','Beşinci madde','Altıncı madde']],['BÖLÜM 3',['Yedinci madde','Sekizinci madde']]];
-  let y = 130;
-  sections.forEach(([title, items])=>{
-    tx(title, 60, y, 300, 28, {fontSize:'11px',fontWeight:'700',color:'#6c63ff',letterSpacing:'2px'});
-    y += 32;
-    items.forEach(item=>{
-      tx('• ' + item, 72, y, 620, 26, {fontSize:'13.5px',color:'#2a2a2a',lineHeight:'1.7'});
-      y += 30;
-    });
-    y += 14;
-  });
-}
-
-function tplMindmap() {
-  a4.style.background = '#f8f8ff';
-  tx('🧠 Beyin Haritası', 220, 30, 350, 44, {fontSize:'22px',fontWeight:'800',fontFamily:"'Syne',sans-serif",color:'#1a1a2e',textAlign:'center'});
-  addEl('shape',{shapeType:'circle',x:297,y:440,w:200,h:120,style:{fill:'#6c63ff'}});
-  tx('MERKEZ KONU', 310, 490, 170, 30, {fontSize:'13px',fontWeight:'700',color:'#fff',textAlign:'center'});
-  const nodes = [{t:'Dal 1',x:60,y:310,sx:297,sy:500},{t:'Dal 2',x:520,y:310,sx:497,sy:500},{t:'Dal 3',x:60,y:520,sx:297,sy:500},{t:'Dal 4',x:520,y:520,sx:497,sy:500},{t:'Dal 5',x:200,y:200,sx:397,sy:440},{t:'Dal 6',x:420,y:200,sx:397,sy:440},{t:'Dal 7',x:170,y:700,sx:297,sy:560},{t:'Dal 8',x:450,y:700,sx:497,sy:560}];
-  nodes.forEach(n=>{
-    addEl('shape',{shapeType:'rounded',x:n.x,y:n.y,w:140,h:50,style:{fill:'#fff',stroke:'#6c63ff'}});
-    tx(n.t, n.x+6, n.y+12, 128, 30, {fontSize:'12px',fontWeight:'600',color:'#1a1a2e',textAlign:'center'});
-  });
-}
-
-function tplReport() {
-  addEl('shape',{shapeType:'rect',x:0,y:0,w:794,h:90,style:{fill:'#1a1a2e'}});
-  tx('RAPOR BAŞLIĞI', 60, 18, 550, 55, {fontSize:'26px',fontWeight:'800',color:'#fff',fontFamily:"'Syne',sans-serif"});
-  tx(new Date().toLocaleDateString('tr-TR'), 580, 34, 154, 28, {fontSize:'13px',color:'rgba(255,255,255,.6)',textAlign:'right'});
-  ['GİRİŞ','ANALİZ','BULGULAR','SONUÇ'].forEach((s,i)=>{
-    const y = 130 + i*200;
-    addEl('shape',{shapeType:'line',x:60,y:y+28,w:4,h:60,style:{fill:'#f5c842'}});
-    tx(s, 74, y, 250, 28, {fontSize:'12px',fontWeight:'700',color:'#1a1a2e',letterSpacing:'2px'});
-    tx('Bu bölümün içeriğini buraya yazın. Detaylı bilgi ve açıklamalar ekleyebilirsiniz.', 74, y+32, 640, 60, {fontSize:'13px',color:'#2a2a2a',lineHeight:'1.7'});
-  });
-}
-
-function tplTable() {
-  tx('📐 VERİ TABLOSU', 60, 50, 500, 50, {fontSize:'24px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
-  addEl('shape',{shapeType:'rect',x:60,y:115,w:670,h:36,style:{fill:'#1a1a2e'}});
-  ['#','BAŞLIK 1','BAŞLIK 2','BAŞLIK 3'].forEach((h,i)=>{
-    tx(h, 68+i*165, 123, 150, 22, {fontSize:'11px',fontWeight:'700',color:'#fff',letterSpacing:'1px'});
-  });
-  for(let r=0;r<6;r++){
-    const y = 151+r*36;
-    addEl('shape',{shapeType:'rect',x:60,y,w:670,h:36,style:{fill:r%2===0?'#f8f8f8':'#fff',stroke:'#e8e8e8'}});
-    [r+1,'Veri','Değer','Not'].forEach((d,i)=>{
-      tx(String(d), 68+i*165, y+8, 150, 22, {fontSize:'13px',color:'#2a2a2a'});
-    });
+  if(el.type==='text') {
+    var t = document.createElement('div');
+    t.className = 'el-txt';
+    t.contentEditable = 'true';
+    t.innerHTML = el.cnt;
+    var s = el.style;
+    if(s.fontSize) t.style.fontSize = s.fontSize;
+    if(s.fontWeight) t.style.fontWeight = s.fontWeight;
+    if(s.fontStyle) t.style.fontStyle = s.fontStyle;
+    if(s.fontFamily) t.style.fontFamily = s.fontFamily;
+    if(s.color) t.style.color = s.color;
+    if(s.textAlign) t.style.textAlign = s.textAlign;
+    if(s.textDecoration) t.style.textDecoration = s.textDecoration;
+    if(s.lineHeight) t.style.lineHeight = s.lineHeight;
+    if(s.background) t.style.background = s.background;
+    if(s.padding) t.style.padding = s.padding;
+    t.addEventListener('input',function(){el.cnt=t.innerHTML;});
+    t.addEventListener('mousedown',function(e){e.stopPropagation();});
+    inner.appendChild(t);
+  } else if(el.type==='image') {
+    var img = document.createElement('img');
+    img.className = 'el-img';
+    img.src = photos[el.imgIdx];
+    inner.appendChild(img);
+  } else if(el.type==='shape') {
+    var svg = makeSVG(el);
+    inner.appendChild(svg);
+  } else if(el.type==='sticker') {
+    var sd = document.createElement('div');
+    sd.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:'+(el.h*0.65)+'px;';
+    sd.textContent = el.cnt;
+    inner.appendChild(sd);
   }
+
+  var rh = document.createElement('div');
+  rh.className = 'rh';
+  rh.addEventListener('mousedown',startResize);
+  inner.appendChild(rh);
+
+  var dh = document.createElement('div');
+  dh.className = 'dh';
+  dh.textContent = '✕';
+  dh.addEventListener('mousedown',function(e){e.stopPropagation();deleteEl(el.id);});
+  inner.appendChild(dh);
+
+  div.appendChild(inner);
+  div.addEventListener('mousedown',startDrag);
+  A4.appendChild(div);
 }
 
-function tplNotes() {
-  a4.style.background = '#fffdf0';
-  addEl('shape',{shapeType:'rect',x:0,y:0,w:794,h:6,style:{fill:'#e87040'}});
-  tx('📝 NOTLAR', 60, 30, 300, 48, {fontSize:'28px',fontWeight:'900',color:'#2a2a2a',fontFamily:"'Playfair Display',serif"});
-  tx(new Date().toLocaleDateString('tr-TR'), 500, 46, 230, 24, {fontSize:'12px',color:'#999',textAlign:'right'});
-  for(let i=0;i<16;i++){
-    addEl('shape',{shapeType:'line',x:60,y:100+i*54,w:670,h:2,style:{fill:'#e8e4c8'}});
-    tx('', 68, 106+i*54, 658, 38, {fontSize:'14px',color:'#3a3a2a',lineHeight:'1.6',fontFamily:"'Outfit',sans-serif"});
+function makeSVG(el) {
+  var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('width','100%');
+  svg.setAttribute('height','100%');
+  svg.style.overflow = 'visible';
+  var c = (el.style&&el.style.fill)||'#6c63ff';
+  var m = {
+    rect:'<rect x="1" y="1" width="99%" height="99%" fill="'+c+'"/>',
+    rounded:'<rect x="1" y="1" width="99%" height="99%" rx="10" ry="10" fill="'+c+'"/>',
+    circle:'<ellipse cx="50%" cy="50%" rx="49%" ry="49%" fill="'+c+'"/>',
+    triangle:'<polygon points="50%,2% 98%,98% 2%,98%" fill="'+c+'"/>',
+    diamond:'<polygon points="50%,2% 98%,50% 50%,98% 2%,50%" fill="'+c+'"/>',
+    star:'<polygon points="50%,5% 61%,35% 98%,35% 68%,57% 79%,91% 50%,70% 21%,91% 32%,57% 2%,35% 39%,35%" fill="'+c+'"/>',
+    line:'<line x1="0" y1="50%" x2="100%" y2="50%" stroke="'+c+'" stroke-width="4"/>',
+    hr:'<line x1="0" y1="35%" x2="100%" y2="35%" stroke="'+c+'" stroke-width="2"/><line x1="0" y1="65%" x2="100%" y2="65%" stroke="'+c+'" stroke-width="2"/>',
+    arrow:'<polygon points="60%,15% 98%,50% 60%,85% 60%,65% 2%,65% 2%,35% 60%,35%" fill="'+c+'"/>',
+    hexagon:'<polygon points="25%,2% 75%,2% 98%,50% 75%,98% 25%,98% 2%,50%" fill="'+c+'"/>',
+    wave:'<path d="M0,50% Q25%,10% 50%,50% T100%,50%" fill="none" stroke="'+c+'" stroke-width="4"/>',
+    plus:'<rect x="40%" y="5%" width="20%" height="90%" fill="'+c+'"/><rect x="5%" y="40%" width="90%" height="20%" fill="'+c+'"/>',
+  };
+  svg.innerHTML = m[el.shp] || m.rect;
+  return svg;
+}
+
+// ===== DRAG =====
+function startDrag(e) {
+  if(e.target.classList.contains('rh') || e.target.classList.contains('dh')) return;
+  var div = e.currentTarget;
+  selectEl(div.id);
+  if(e.target.contentEditable==='true') return;
+  dragging = true;
+  dragOff.x = e.clientX - div.offsetLeft;
+  dragOff.y = e.clientY - div.offsetTop;
+  e.preventDefault();
+  document.addEventListener('mousemove',onDrag);
+  document.addEventListener('mouseup',stopDrag);
+}
+function onDrag(e) {
+  if(!dragging||!selId) return;
+  var div = document.getElementById(selId);
+  if(!div) return;
+  var el = getEl(selId);
+  el.x = Math.max(0,e.clientX-dragOff.x);
+  el.y = Math.max(0,e.clientY-dragOff.y);
+  div.style.left = el.x+'px';
+  div.style.top = el.y+'px';
+  refreshProps();
+}
+function stopDrag() {dragging=false;document.removeEventListener('mousemove',onDrag);document.removeEventListener('mouseup',stopDrag);}
+
+// ===== RESIZE =====
+function startResize(e) {
+  e.stopPropagation();
+  isResizing = true;
+  var div = document.getElementById(selId);
+  resStart = {x:e.clientX,y:e.clientY,w:div.offsetWidth,h:div.offsetHeight};
+  document.addEventListener('mousemove',onResize);
+  document.addEventListener('mouseup',stopResize);
+}
+function onResize(e) {
+  if(!isResizing||!selId) return;
+  var el = getEl(selId);
+  var div = document.getElementById(selId);
+  el.w = Math.max(30,resStart.w+(e.clientX-resStart.x));
+  el.h = Math.max(15,resStart.h+(e.clientY-resStart.y));
+  div.style.width = el.w+'px';
+  div.style.height = el.h+'px';
+  // update sticker font size
+  if(el.type==='sticker') {
+    var sd = div.querySelector('div');
+    if(sd) sd.style.fontSize = (el.h*0.65)+'px';
   }
+  refreshProps();
+}
+function stopResize() {isResizing=false;document.removeEventListener('mousemove',onResize);document.removeEventListener('mouseup',stopResize);}
+
+// ===== SELECT =====
+function selectEl(id) {
+  deselect();
+  selId = id;
+  var div = document.getElementById(id);
+  if(div) div.classList.add('sel');
+  refreshProps();
+}
+function deselect(e) {
+  if(e && e.target.closest&&(e.target.closest('.el')||e.target.closest('.props'))) return;
+  document.querySelectorAll('.el').forEach(function(d){d.classList.remove('sel');});
+  selId = null;
+  document.getElementById('emptyProps').style.display = 'block';
+  document.getElementById('propsFill').style.display = 'none';
+}
+function getEl(id){return els.find(function(e){return e.id===id;});}
+
+function deleteEl(id) {
+  saveUndo();
+  els = els.filter(function(e){return e.id!==id;});
+  var d = document.getElementById(id); if(d) d.remove();
+  selId=null;
+  deselect();
 }
 
-function tplResume() {
-  addEl('shape',{shapeType:'rect',x:0,y:0,w:794,h:150,style:{fill:'#1a1a2e'}});
-  tx('AD SOYAD', 40, 40, 400, 55, {fontSize:'32px',fontWeight:'900',color:'#fff',fontFamily:"'Syne',sans-serif"});
-  tx('Ünvan / Meslek', 40, 100, 300, 34, {fontSize:'16px',color:'rgba(255,255,255,.7)'});
-  tx('📧 email@email.com  •  📱 555 123 4567', 40, 164, 500, 28, {fontSize:'12px',color:'#555'});
-  addEl('shape',{shapeType:'rect',x:0,y:200,w:230,h:923,style:{fill:'#f8f8f8'}});
-  ['EĞİTİM','BECERİLER','İLETİŞİM'].forEach((s,i)=>{
-    tx(s, 16, 220+i*250, 200, 24, {fontSize:'10px',fontWeight:'700',color:'#6c63ff',letterSpacing:'2px'});
-    addEl('shape',{shapeType:'line',x:16,y:246+i*250,w:200,h:2,style:{fill:'#6c63ff'}});
-    tx('İçerik buraya', 16, 252+i*250, 200, 80, {fontSize:'12px',color:'#2a2a2a',lineHeight:'1.7'});
-  });
-  ['DENEYİM','PROJELER'].forEach((s,i)=>{
-    tx(s, 248, 220+i*340, 470, 24, {fontSize:'10px',fontWeight:'700',color:'#1a1a2e',letterSpacing:'2px'});
-    addEl('shape',{shapeType:'line',x:248,y:246+i*340,w:480,h:2,style:{fill:'#e8e8e8'}});
-    tx('Şirket Adı — Pozisyon (2020-2024)', 248, 252+i*340, 470, 28, {fontSize:'13px',fontWeight:'600',color:'#1a1a2e'});
-    tx('Görev açıklaması ve başarılar buraya yazılır.', 248, 284+i*340, 470, 60, {fontSize:'12px',color:'#555',lineHeight:'1.7'});
-  });
+function refreshProps() {
+  if(!selId) return;
+  var el = getEl(selId);
+  if(!el) return;
+  document.getElementById('emptyProps').style.display = 'none';
+  var pf = document.getElementById('propsFill');
+  pf.style.display = 'block';
+  pf.innerHTML =
+    '<div class="prow"><span class="plbl">X</span><input class="pinput" type="number" value="'+Math.round(el.x)+'" onchange="moveProp(\'x\',this.value)"></div>'+
+    '<div class="prow"><span class="plbl">Y</span><input class="pinput" type="number" value="'+Math.round(el.y)+'" onchange="moveProp(\'y\',this.value)"></div>'+
+    '<div class="prow"><span class="plbl">Genişlik</span><input class="pinput" type="number" value="'+Math.round(el.w)+'" onchange="sizeProp(\'w\',this.value)"></div>'+
+    '<div class="prow"><span class="plbl">Yükseklik</span><input class="pinput" type="number" value="'+Math.round(el.h)+'" onchange="sizeProp(\'h\',this.value)"></div>'+
+    '<div class="plbl" style="margin-bottom:4px;">Opaklık</div>'+
+    '<input class="oslider" type="range" min="0" max="100" value="'+Math.round((el.style.opacity!=null?el.style.opacity:1)*100)+'" oninput="applyOpacity(this.value)">'+
+    '<div class="div"></div>'+
+    '<div class="plbl" style="margin-bottom:6px;">Katmanlar</div>'+
+    '<div class="lbtns">'+
+    '<button class="lbtn" onclick="bringF()">Öne</button>'+
+    '<button class="lbtn" onclick="sendB()">Arkaya</button>'+
+    '<button class="lbtn" onclick="dupEl()">Kopyala</button>'+
+    '<button class="lbtn red" onclick="deleteEl(\''+el.id+'\')">Sil</button>'+
+    '</div>';
 }
 
-function tplTimeline() {
-  tx('⏱️ ZAMAN ÇİZELGESİ', 60, 50, 500, 48, {fontSize:'24px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
-  addEl('shape',{shapeType:'line',x:130,y:120,w:4,h:880,style:{fill:'#e8e8e8'}});
-  const events = ['Ocak 2023','Nisan 2023','Temmuz 2023','Ekim 2023','Ocak 2024','Nisan 2024'];
-  events.forEach((d,i)=>{
-    const y = 130+i*160;
-    addEl('shape',{shapeType:'circle',x:116,y:y-8,w:28,h:28,style:{fill:i%2===0?'#6c63ff':'#ff6584'}});
-    tx(d, 168, y-8, 180, 26, {fontSize:'11px',fontWeight:'700',color:i%2===0?'#6c63ff':'#ff6584',letterSpacing:'1px'});
-    tx('Olay başlığı', 168, y+20, 450, 28, {fontSize:'15px',fontWeight:'700',color:'#1a1a2e'});
-    tx('Açıklama metni buraya gelir.', 168, y+52, 450, 40, {fontSize:'12px',color:'#666',lineHeight:'1.6'});
-  });
+function moveProp(ax,v){var el=getEl(selId);if(!el)return;el[ax==='x'?'x':'y']=+v;var d=document.getElementById(selId);if(d)d.style[ax==='x'?'left':'top']=v+'px';}
+function sizeProp(d,v){var el=getEl(selId);if(!el)return;el[d]=+v;var div=document.getElementById(selId);if(div)div.style[d==='w'?'width':'height']=v+'px';}
+function applyOpacity(v){var el=getEl(selId);if(!el)return;el.style.opacity=v/100;var d=document.getElementById(selId);if(d)d.style.opacity=v/100;}
+function bringF(){var el=getEl(selId);if(!el)return;var mx=Math.max.apply(null,els.map(function(e){return e.z;}))+1;el.z=mx;document.getElementById(selId).style.zIndex=mx;}
+function sendB(){var el=getEl(selId);if(!el)return;var mn=Math.max(1,Math.min.apply(null,els.map(function(e){return e.z;}))-1);el.z=mn;document.getElementById(selId).style.zIndex=mn;}
+function dupEl(){var el=getEl(selId);if(!el)return;var ne=makeEl(el.type,{x:el.x+18,y:el.y+18,w:el.w,h:el.h,cnt:el.cnt,style:Object.assign({},el.style),shp:el.shp,imgIdx:el.imgIdx});selectEl(ne.id);}
+
+// ===== STYLE APPLY =====
+function applyToSel(fn){if(!selId)return;var el=getEl(selId);if(!el)return;fn(el,document.getElementById(selId));}
+function getTxt(div){return div?div.querySelector('.el-txt'):null;}
+
+function applyTC(c){applyToSel(function(el,div){el.style.color=c;var t=getTxt(div);if(t)t.style.color=c;});}
+function applyFF(f){applyToSel(function(el,div){el.style.fontFamily=f;var t=getTxt(div);if(t)t.style.fontFamily=f;});}
+function applyFS(s){applyToSel(function(el,div){el.style.fontSize=s;var t=getTxt(div);if(t)t.style.fontSize=s;});}
+function applyBold(){applyToSel(function(el,div){var t=getTxt(div);if(!t)return;var cur=window.getComputedStyle(t).fontWeight;var nb=(cur==='700'||cur==='bold')?'400':'700';t.style.fontWeight=nb;el.style.fontWeight=nb;});}
+function applyItalic(){applyToSel(function(el,div){var t=getTxt(div);if(!t)return;var cur=window.getComputedStyle(t).fontStyle;var ni=cur==='italic'?'normal':'italic';t.style.fontStyle=ni;el.style.fontStyle=ni;});}
+function applyUnderline(){applyToSel(function(el,div){var t=getTxt(div);if(!t)return;var cur=t.style.textDecoration;t.style.textDecoration=cur==='underline'?'none':'underline';});}
+function applyAlign(a){applyToSel(function(el,div){var t=getTxt(div);if(t){t.style.textAlign=a;el.style.textAlign=a;}});}
+function applyShapeColor(c){applyToSel(function(el,div){if(el.type!=='shape')return;el.style.fill=c;var svg=div.querySelector('svg');if(svg){var ns=makeSVG(el);div.querySelector('.el-inner').replaceChild(ns,svg);}});}
+function applyBg(i){if(!window._bgs)return;var bg=window._bgs[i];if(!bg)return;A4.setAttribute('style','');A4.style.cssText='width:794px;min-height:1123px;position:relative;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.8);border-radius:2px;flex-shrink:0;'+bg.s;toast('🎨 Arkaplan değiştirildi');}
+
+// ===== ADD ELEMENTS =====
+function addTextEl(v) {
+  var map = {
+    heading:{cnt:'Büyük Başlık',style:{fontSize:'34px',fontWeight:'700',fontFamily:"'Syne',sans-serif",color:'#1a1a1a'},w:450,h:60},
+    sub:{cnt:'Alt Başlık',style:{fontSize:'20px',fontWeight:'600',fontFamily:"'Outfit',sans-serif",color:'#1a1a1a'},w:350,h:40},
+    body:{cnt:'Metninizi buraya yazın...',style:{fontSize:'14px',fontFamily:"'Outfit',sans-serif",color:'#2a2a2a',lineHeight:'1.7'},w:350,h:70},
+    caption:{cnt:'Açıklama metni',style:{fontSize:'11px',color:'#888'},w:220,h:28},
+    quote:{cnt:'"Alıntı metni buraya gelir"',style:{fontSize:'16px',fontStyle:'italic',color:'#555',fontFamily:'Georgia,serif'},w:340,h:55},
+    num:{cnt:'1. Liste maddesi',style:{fontSize:'14px',color:'#2a2a2a',lineHeight:'1.7'},w:300,h:36},
+  };
+  var cfg = map[v]||map.body;
+  var ne = makeEl('text',{cnt:cfg.cnt,style:cfg.style,w:cfg.w,h:cfg.h,x:60,y:60+els.length*12});
+  selectEl(ne.id);
+  toast('T Metin eklendi');
 }
 
-function tplCover() {
-  a4.style.background = 'linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)';
-  addEl('shape',{shapeType:'rect',x:0,y:0,w:794,h:6,style:{fill:'#6c63ff'}});
-  tx('KAPAK BAŞLIĞI', 80, 360, 634, 100, {fontSize:'48px',fontWeight:'900',color:'#fff',fontFamily:"'Syne',sans-serif",textAlign:'center',lineHeight:'1.1'});
-  addEl('shape',{shapeType:'line',x:200,y:475,w:394,h:3,style:{fill:'#f5c842'}});
-  tx('Alt başlık veya slogan buraya', 80, 490, 634, 44, {fontSize:'18px',color:'rgba(255,255,255,.7)',textAlign:'center'});
-  tx(new Date().getFullYear(), 80, 1000, 634, 36, {fontSize:'13px',color:'rgba(255,255,255,.4)',textAlign:'center'});
+function addShape(shp) {
+  var ne = makeEl('shape',{shp:shp,style:{fill:'#6c63ff'},w:130,h:80,x:80,y:80+els.length*8});
+  selectEl(ne.id);
+  toast('◻ Şekil eklendi');
 }
 
-function tplInvoice() {
-  tx('FATURA', 60, 50, 300, 55, {fontSize:'32px',fontWeight:'900',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
-  tx('Fatura No: #001\nTarih: '+new Date().toLocaleDateString('tr-TR'), 450, 50, 280, 55, {fontSize:'12px',color:'#666',textAlign:'right'});
-  addEl('shape',{shapeType:'line',x:60,y:115,w:670,h:2,style:{fill:'#1a1a2e'}});
-  tx('Kimden:', 60, 130, 300, 20, {fontSize:'10px',color:'#999',letterSpacing:'1px'});
-  tx('Şirket Adı\nAdres Satırı\nŞehir, Ülke', 60, 152, 300, 60, {fontSize:'13px',color:'#2a2a2a',lineHeight:'1.6'});
-  tx('Kime:', 430, 130, 300, 20, {fontSize:'10px',color:'#999',letterSpacing:'1px'});
-  tx('Müşteri Adı\nMüşteri Adresi\nŞehir, Ülke', 430, 152, 300, 60, {fontSize:'13px',color:'#2a2a2a',lineHeight:'1.6'}});
-  addEl('shape',{shapeType:'rect',x:60,y:240,w:670,h:34,style:{fill:'#1a1a2e'}});
-  ['ÜRÜN/HİZMET','MİKTAR','BİRİM FİYAT','TOPLAM'].forEach((h,i)=>{
-    tx(h, 68+i*165, 248, 155, 20, {fontSize:'10px',fontWeight:'700',color:'#fff',letterSpacing:'1px'});
-  });
-  for(let r=0;r<5;r++){
-    const y=274+r*36;
-    addEl('shape',{shapeType:'rect',x:60,y,w:670,h:36,style:{fill:r%2===0?'#f8f8f8':'#fff',stroke:'#eee'}});
-    ['Ürün '+( r+1),'1','₺100.00','₺100.00'].forEach((d,i)=>{
-      tx(d, 68+i*165, y+8, 155, 22, {fontSize:'13px',color:'#2a2a2a'});
+function addSticker(em) {
+  var ne = makeEl('sticker',{cnt:em,w:60,h:60,x:100,y:100+els.length*6});
+  selectEl(ne.id);
+  toast(em+' Eklendi');
+}
+
+function addImgEl(idx) {
+  var ne = makeEl('image',{imgIdx:parseInt(idx),w:220,h:170,x:80,y:80+els.length*8});
+  selectEl(ne.id);
+  toast('🖼 Fotoğraf eklendi');
+}
+
+// ===== UNDO =====
+function saveUndo() {undoStack.push(A4.innerHTML);if(undoStack.length>25)undoStack.shift();}
+function undoLast() {if(!undoStack.length)return;A4.innerHTML=undoStack.pop();els=[];selId=null;toast('↩ Geri alındı');}
+
+// ===== CLEAR =====
+function clearCanvas(){saveUndo();A4.innerHTML='';els=[];selId=null;A4.style.background='#fff';toast('🗑 Temizlendi');}
+
+// ===== TEMPLATES =====
+var TEMPLATES = [
+  {id:'blank',icon:'⬜',name:'Boş Sayfa'},
+  {id:'summary',icon:'📝',name:'Özet'},
+  {id:'bullets',icon:'📋',name:'Maddeler'},
+  {id:'mindmap',icon:'🧠',name:'Beyin Haritası'},
+  {id:'report',icon:'📊',name:'Rapor'},
+  {id:'table',icon:'📐',name:'Tablo'},
+  {id:'notes',icon:'🗒️',name:'Defter'},
+  {id:'resume',icon:'👤',name:'CV'},
+  {id:'timeline',icon:'⏱️',name:'Zaman Çizelgesi'},
+  {id:'cover',icon:'🎨',name:'Kapak'},
+  {id:'invoice',icon:'🧾',name:'Fatura'},
+  {id:'poster',icon:'📌',name:'Afiş'},
+  {id:'recipe',icon:'🍳',name:'Tarif'},
+  {id:'flyer',icon:'📢',name:'El İlanı'},
+  {id:'newsletter',icon:'📰',name:'Bülten'},
+  {id:'certificate',icon:'🏆',name:'Sertifika'},
+  {id:'quiz',icon:'❓',name:'Sınav'},
+  {id:'schedule',icon:'📅',name:'Program'},
+  {id:'proposal',icon:'💼',name:'Teklif'},
+  {id:'journal',icon:'📖',name:'Günlük'},
+  {id:'comparison',icon:'⚖️',name:'Karşılaştırma'},
+  {id:'swot',icon:'🔷',name:'SWOT'},
+  {id:'kanban',icon:'🗂️',name:'Kanban'},
+  {id:'infographic',icon:'📈',name:'İnfografik'},
+  {id:'moodboard',icon:'✨',name:'Mood Board'},
+];
+
+function openTemplates(){
+  var g = document.getElementById('tplModalGrid');
+  g.innerHTML = TEMPLATES.map(function(t){
+    return '<div onclick="applyTpl(\''+t.id+'\');closeTplModal()" style="background:#222;border:1.5px solid #2a2a38;border-radius:10px;padding:14px 8px;cursor:pointer;text-align:center;transition:all .15s;" onmouseover="this.style.borderColor=\'#6c63ff\'" onmouseout="this.style.borderColor=\'#2a2a38\'">' +
+      '<div style="font-size:26px;margin-bottom:6px;">'+t.icon+'</div>' +
+      '<div style="font-size:11px;color:#aaa;font-weight:600;">'+t.name+'</div></div>';
+  }).join('');
+  document.getElementById('tplModal').style.display = 'block';
+}
+function closeTplModal(){document.getElementById('tplModal').style.display='none';}
+
+function applyTpl(id) {
+  clearCanvas(true);
+  var fn = TPL_FNS[id];
+  if(fn) fn();
+  toast('📐 '+id+' şablonu yüklendi!');
+}
+
+// helper: quick text element
+function qt(text,x,y,w,h,s){
+  return makeEl('text',{cnt:text,x:x,y:y,w:w||300,h:h||36,style:s||{}});
+}
+// helper: quick shape
+function qs(shp,x,y,w,h,fill){
+  return makeEl('shape',{shp:shp,x:x,y:y,w:w,h:h,style:{fill:fill||'#6c63ff'}});
+}
+
+var TPL_FNS = {
+  blank: function(){},
+  summary: function(){
+    A4.style.background='#fff';
+    qt('<b>BAŞLIK BURAYA</b>',60,55,670,58,{fontSize:'30px',fontFamily:"'Syne',sans-serif",fontWeight:'800',color:'#1a1a1a'});
+    qt('Tarih · Yazar · Kaynak',60,122,450,24,{fontSize:'12px',color:'#999'});
+    qs('line',60,152,670,5,'#1a1a2e');
+    qt('Birinci paragraf metni buraya gelir. Konuya giriş yapın ve temel bilgileri aktarın.',60,168,670,70,{fontSize:'14px',lineHeight:'1.8',color:'#2a2a2a'});
+    qt('İkinci paragraf daha fazla detay içerir. Ek açıklamalar buraya yazılır.',60,248,670,70,{fontSize:'14px',lineHeight:'1.8',color:'#2a2a2a'});
+    qt('Sonuç cümlesi buraya gelir.',60,328,670,40,{fontSize:'14px',lineHeight:'1.8',color:'#2a2a2a'});
+  },
+  bullets: function(){
+    A4.style.background='#fff';
+    qt('📋 MADDE MADDE',60,50,600,52,{fontSize:'26px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
+    qs('rect',60,110,670,4,'#6c63ff');
+    var y=126;
+    [['BÖLÜM 1',['• Birinci madde içeriği','• İkinci madde içeriği','• Üçüncü madde içeriği']],
+     ['BÖLÜM 2',['• Dördüncü madde','• Beşinci madde','• Altıncı madde']],
+     ['BÖLÜM 3',['• Yedinci madde','• Sekizinci madde']]].forEach(function(sec){
+      qt(sec[0],60,y,400,26,{fontSize:'10px',fontWeight:'700',color:'#6c63ff',letterSpacing:'2px'});
+      y+=32;
+      sec[1].forEach(function(item){
+        qt(item,72,y,630,28,{fontSize:'13.5px',color:'#2a2a2a',lineHeight:'1.7'});
+        y+=32;
+      });
+      y+=14;
     });
-  }
-  addEl('shape',{shapeType:'rect',x:460,y:460,w:270,h:36,style:{fill:'#6c63ff'}});
-  tx('GENEL TOPLAM: ₺500.00', 468, 468, 254, 22, {fontSize:'13px',fontWeight:'700',color:'#fff'});
-}
-
-function tplPoster() {
-  a4.style.background = 'linear-gradient(135deg,#ff6584,#ff8c42)';
-  tx('ETKİNLİK', 60, 80, 674, 70, {fontSize:'60px',fontWeight:'900',color:'#fff',fontFamily:"'Syne',sans-serif",textAlign:'center'});
-  tx('ADI', 60, 148, 674, 70, {fontSize:'60px',fontWeight:'900',color:'rgba(255,255,255,.3)',fontFamily:"'Syne',sans-serif",textAlign:'center'});
-  addEl('shape',{shapeType:'line',x:200,y:230,w:394,h:3,style:{fill:'rgba(255,255,255,.5)'}});
-  tx('📅 Tarih · 🕐 Saat · 📍 Yer', 60, 250, 674, 40, {fontSize:'16px',color:'rgba(255,255,255,.9)',textAlign:'center'});
-  tx('Etkinlik detayları ve açıklama buraya yazılır.', 100, 320, 594, 80, {fontSize:'15px',color:'rgba(255,255,255,.8)',textAlign:'center',lineHeight:'1.7'});
-  addEl('shape',{shapeType:'rounded',x:270,y:450,w:254,h:54,style:{fill:'rgba(255,255,255,.15)',stroke:'rgba(255,255,255,.4)'}});
-  tx('Daha Fazla Bilgi', 272, 463, 250, 28, {fontSize:'14px',fontWeight:'700',color:'#fff',textAlign:'center'});
-}
-
-function tplRecipe() {
-  a4.style.background = '#fffdf0';
-  addEl('shape',{shapeType:'rect',x:0,y:0,w:794,h:5,style:{fill:'#e87040'}});
-  tx('🍳 Tarif Adı', 60, 30, 500, 55, {fontSize:'30px',fontWeight:'900',color:'#2a2a2a',fontFamily:"'Playfair Display',serif"});
-  tx('⏱ 30 dk  •  👥 4 kişi  •  🔥 Orta', 60, 88, 450, 28, {fontSize:'12px',color:'#888'});
-  addEl('shape',{shapeType:'line',x:60,y:122,w:670,h:2,style:{fill:'#e8e4c8'}});
-  tx('MALZEMELER', 60, 136, 300, 24, {fontSize:'10px',fontWeight:'700',color:'#e87040',letterSpacing:'2px'});
-  ['• 200g malzeme 1','• 100ml malzeme 2','• 3 adet malzeme 3','• 1 tatlı kaşığı tuz','• Zeytinyağı'].forEach((m,i)=>{
-    tx(m, 60, 166+i*28, 300, 24, {fontSize:'13px',color:'#2a2a2a'});
-  });
-  tx('HAZIRLANIŞI', 390, 136, 300, 24, {fontSize:'10px',fontWeight:'700',color:'#e87040',letterSpacing:'2px'});
-  ['1. İlk adım açıklaması','2. İkinci adım','3. Üçüncü adım','4. Pişirme süresi ve ısı','5. Servis önerisi'].forEach((s,i)=>{
-    tx(s, 390, 166+i*56, 330, 48, {fontSize:'13px',color:'#2a2a2a',lineHeight:'1.6'});
-  });
-}
-
-function tplFlyer() {
-  a4.style.background = '#fff';
-  addEl('shape',{shapeType:'rect',x:0,y:0,w:794,h:320,style:{fill:'#6c63ff'}});
-  tx('DUYURU', 60, 80, 674, 70, {fontSize:'56px',fontWeight:'900',color:'#fff',fontFamily:"'Syne',sans-serif",textAlign:'center'});
-  tx('Başlık ve Ana Mesaj Buraya', 60, 160, 674, 50, {fontSize:'22px',color:'rgba(255,255,255,.85)',textAlign:'center'});
-  tx('Tarih · Saat · Yer', 60, 220, 674, 36, {fontSize:'14px',color:'rgba(255,255,255,.65)',textAlign:'center'});
-  tx('Detaylı bilgi ve açıklama metni burada yer alır. Etkinlik veya duyuru hakkında önemli bilgiler aktarılır.', 80, 360, 634, 80, {fontSize:'15px',color:'#2a2a2a',textAlign:'center',lineHeight:'1.7'});
-  addEl('shape',{shapeType:'rounded',x:247,y:480,w:300,h:54,style:{fill:'#6c63ff'}});
-  tx('İletişim / Kayıt Ol', 247, 495, 300, 24, {fontSize:'14px',fontWeight:'700',color:'#fff',textAlign:'center'});
-  tx('📞 555 000 0000  •  🌐 www.site.com', 80, 580, 634, 28, {fontSize:'12px',color:'#888',textAlign:'center'});
-}
-
-function tplNewsletter() {
-  addEl('shape',{shapeType:'rect',x:0,y:0,w:794,h:70,style:{fill:'#1a1a2e'}});
-  tx('📰 BÜLTEN ADI', 60, 18, 500, 36, {fontSize:'20px',fontWeight:'800',color:'#fff',fontFamily:"'Syne',sans-serif"});
-  tx(new Date().toLocaleDateString('tr-TR'), 580, 26, 154, 24, {fontSize:'11px',color:'rgba(255,255,255,.5)',textAlign:'right'});
-  tx('ÖNEMLI HABER', 60, 90, 355, 28, {fontSize:'11px',fontWeight:'700',color:'#6c63ff',letterSpacing:'1.5px'});
-  tx('Haber Başlığı Buraya Yazılır', 60, 120, 355, 40, {fontSize:'18px',fontWeight:'700',color:'#1a1a2e'});
-  tx('Haber içeriği ve detayları burada yer alır. Okuyuculara aktarılmak istenen bilgiler yazılır.', 60, 164, 355, 70, {fontSize:'13px',color:'#555',lineHeight:'1.7'});
-  addEl('shape',{shapeType:'line',x:430,y:90,w:2,h:250,style:{fill:'#e8e8e8'}});
-  tx('KISA HABERLER', 450, 90, 280, 28, {fontSize:'11px',fontWeight:'700',color:'#ff6584',letterSpacing:'1.5px'});
-  ['Haber 1 başlığı','Haber 2 başlığı','Haber 3 başlığı'].forEach((h,i)=>{
-    tx('• '+h, 450, 120+i*66, 280, 24, {fontSize:'13px',fontWeight:'600',color:'#1a1a2e'});
-    tx('Kısa açıklama', 450, 146+i*66, 280, 22, {fontSize:'11px',color:'#888'});
-  });
-}
-
-function tplCertificate() {
-  a4.style.background = '#faf8f3';
-  addEl('shape',{shapeType:'rect',x:0,y:0,w:794,h:1123,style:{fill:'none',stroke:'#c9a84c'}});
-  addEl('shape',{shapeType:'rect',x:10,y:10,w:774,h:1103,style:{fill:'none',stroke:'#e8d5a3'}});
-  tx('🏆', 327, 80, 140, 80, {fontSize:'56px',textAlign:'center'});
-  tx('SERTİFİKA', 80, 170, 634, 55, {fontSize:'40px',fontWeight:'900',color:'#c9a84c',fontFamily:"'Playfair Display',serif",textAlign:'center',letterSpacing:'6px'});
-  addEl('shape',{shapeType:'line',x:200,y:232,w:394,h:2,style:{fill:'#c9a84c'}});
-  tx('Bu belge ile,', 80, 260, 634, 32, {fontSize:'14px',color:'#888',textAlign:'center'});
-  tx('AD SOYAD', 80, 300, 634, 60, {fontSize:'36px',fontWeight:'700',color:'#1a1a2e',fontFamily:"'Playfair Display',serif",textAlign:'center'});
-  tx('başarı ile tamamladığı teyit edilir.', 80, 370, 634, 32, {fontSize:'14px',color:'#888',textAlign:'center'});
-  tx('KONU / PROGRAM ADI', 80, 416, 634, 44, {fontSize:'22px',fontWeight:'700',color:'#c9a84c',textAlign:'center'});
-  addEl('shape',{shapeType:'line',x:150,y:980,w:200,h:2,style:{fill:'#1a1a2e'}});
-  tx('İmza', 150, 988, 200, 24, {fontSize:'12px',color:'#888',textAlign:'center'});
-  addEl('shape',{shapeType:'line',x:450,y:980,w:200,h:2,style:{fill:'#1a1a2e'}});
-  tx(new Date().toLocaleDateString('tr-TR'), 450, 988, 200, 24, {fontSize:'12px',color:'#888',textAlign:'center'});
-}
-
-function tplQuiz() {
-  tx('📋 SINAV / TEST', 60, 50, 500, 48, {fontSize:'26px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
-  tx('Ad Soyad: ____________________________    Tarih: __________    Not: _____', 60, 100, 670, 28, {fontSize:'12px',color:'#555'});
-  addEl('shape',{shapeType:'line',x:60,y:134,w:670,h:2,style:{fill:'#e8e8e8'}});
-  for(let q=1;q<=5;q++){
-    const y = 148+(q-1)*170;
-    tx(`Soru ${q}: Soru metni buraya yazılır?`, 60, y, 670, 30, {fontSize:'14px',fontWeight:'600',color:'#1a1a2e'});
-    ['A) Şık bir','B) Şık iki','C) Şık üç','D) Şık dört'].forEach((s,i)=>{
-      tx(s, 80+i*160, y+36, 155, 24, {fontSize:'12px',color:'#2a2a2a'});
+  },
+  mindmap: function(){
+    A4.style.background='#f8f8ff';
+    qt('🧠 Beyin Haritası',200,30,394,44,{fontSize:'22px',fontWeight:'800',fontFamily:"'Syne',sans-serif",color:'#1a1a2e',textAlign:'center'});
+    qs('circle',297,440,200,120,'#6c63ff');
+    qt('MERKEZ<br>KONU',315,488,165,30,{fontSize:'13px',fontWeight:'700',color:'#fff',textAlign:'center'});
+    var nodes=[{t:'Dal 1',x:55,y:305},{t:'Dal 2',x:515,y:305},{t:'Dal 3',x:55,y:510},{t:'Dal 4',x:515,y:510},{t:'Dal 5',x:180,y:195},{t:'Dal 6',x:415,y:195},{t:'Dal 7',x:165,y:695},{t:'Dal 8',x:445,y:695}];
+    nodes.forEach(function(n){
+      qs('rounded',n.x,n.y,145,50,'#fff');
+      qt(n.t,n.x+6,n.y+13,132,28,{fontSize:'12px',fontWeight:'600',color:'#1a1a2e',textAlign:'center'});
     });
-    addEl('shape',{shapeType:'rect',x:60,y:y+68,w:670,h:36,style:{fill:'#f8f8f8',stroke:'#e8e8e8'}});
-    tx('Cevap:', 68, y+76, 80, 20, {fontSize:'11px',color:'#888'});
-    addEl('shape',{shapeType:'line',x:60,y:y+150,w:670,h:1,style:{fill:'#e8e8e8'}});
-  }
-}
-
-function tplSchedule() {
-  tx('📅 HAFTALIK PROGRAM', 60, 50, 500, 46, {fontSize:'24px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
-  const days = ['PAZ','PZT','SAL','ÇAR','PER','CUM','CMT'];
-  const w = Math.floor(670/7);
-  addEl('shape',{shapeType:'rect',x:60,y:106,w:670,h:34,style:{fill:'#1a1a2e'}});
-  days.forEach((d,i)=>tx(d,68+i*w,114,w-4,18,{fontSize:'10px',fontWeight:'700',color:i===0||i===6?'#ff6584':'#fff',textAlign:'center',letterSpacing:'1px'}));
-  const times = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00'];
-  times.forEach((t,r)=>{
-    addEl('shape',{shapeType:'rect',x:60,y:140+r*70,w:670,h:70,style:{fill:r%2===0?'#f8f8f8':'#fff',stroke:'#e8e8e8'}});
-    tx(t,8,152+r*70,50,18,{fontSize:'9px',color:'#aaa',textAlign:'right'});
-    days.forEach((d,i)=>{
-      addEl('shape',{shapeType:'line',x:60+i*w,y:140+r*70,w:1,h:70,style:{fill:'#e8e8e8'}});
+  },
+  report: function(){
+    qs('rect',0,0,794,90,'#1a1a2e');
+    qt('RAPOR BAŞLIĞI',60,18,550,55,{fontSize:'26px',fontWeight:'800',color:'#fff',fontFamily:"'Syne',sans-serif"});
+    qt(new Date().toLocaleDateString('tr-TR'),580,34,154,28,{fontSize:'12px',color:'rgba(255,255,255,.5)',textAlign:'right'});
+    ['GİRİŞ','ANALİZ','BULGULAR','SONUÇ'].forEach(function(s,i){
+      var y=130+i*200;
+      qs('rect',60,y,5,55,'#f5c842');
+      qt(s,74,y,250,26,{fontSize:'11px',fontWeight:'700',color:'#1a1a2e',letterSpacing:'2px'});
+      qt('Bu bölümün içeriği buraya yazılır. Detaylar eklenir.',74,y+30,640,55,{fontSize:'13px',color:'#2a2a2a',lineHeight:'1.7'});
     });
-  });
-}
-
-function tplProposal() {
-  addEl('shape',{shapeType:'rect',x:0,y:0,w:794,h:200,style:{fill:'#1a1a2e'}});
-  addEl('shape',{shapeType:'rect',x:0,y:194,w:794,h:6,style:{fill:'#6c63ff'}});
-  tx('PROJE TEKLİFİ', 60, 50, 500, 55, {fontSize:'32px',fontWeight:'900',color:'#fff',fontFamily:"'Syne',sans-serif"});
-  tx('Proje Adı / Müşteri Adı', 60, 114, 500, 36, {fontSize:'16px',color:'rgba(255,255,255,.6)'});
-  tx(new Date().toLocaleDateString('tr-TR'), 550, 128, 180, 28, {fontSize:'12px',color:'rgba(255,255,255,.5)',textAlign:'right'});
-  const sections = ['PROJE HAKKINDA','KAPSAM VE HEDEFLER','ZAMAN ÇİZELGESİ','BÜTÇE','İLETİŞİM'];
-  sections.forEach((s,i)=>{
-    const y = 230+i*165;
-    addEl('shape',{shapeType:'rect',x:60,y,w:8,h:60,style:{fill:'#6c63ff'}});
-    tx(s, 80, y+4, 400, 24, {fontSize:'11px',fontWeight:'700',color:'#6c63ff',letterSpacing:'1.5px'});
-    tx('Bu bölümün içeriği buraya yazılır. Detaylı açıklamalar ve bilgiler eklenebilir.', 80, y+32, 620, 50, {fontSize:'13px',color:'#2a2a2a',lineHeight:'1.7'});
-  });
-}
-
-function tplJournal() {
-  a4.style.background = '#fdf9f0';
-  addEl('shape',{shapeType:'rect',x:0,y:0,w:6,h:1123,style:{fill:'#e87040'}});
-  tx(new Date().toLocaleDateString('tr-TR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}), 26, 40, 700, 36, {fontSize:'14px',color:'#c0a882',fontFamily:"'Playfair Display',serif",fontStyle:'italic'});
-  tx('Günlük...', 26, 82, 700, 48, {fontSize:'28px',fontWeight:'700',color:'#2a2a2a',fontFamily:"'Playfair Display',serif"});
-  addEl('shape',{shapeType:'line',x:26,y:136,w:740,h:1,style:{fill:'#e8dcc8'}});
-  tx('Bugün nasıl hissettim?', 26, 152, 400, 24, {fontSize:'11px',color:'#c0a882',letterSpacing:'1px'});
-  for(let i=0;i<8;i++) addEl('shape',{shapeType:'line',x:26,y:180+i*52,w:740,h:1,style:{fill:'#e8dcc8'}});
-  tx('Minnettar olduklarım:', 26, 620, 300, 24, {fontSize:'11px',color:'#c0a882',letterSpacing:'1px'});
-  ['1.','2.','3.'].forEach((n,i)=>tx(n+'  _________________________', 26, 648+i*46, 400, 36, {fontSize:'13px',color:'#2a2a2a',lineHeight:'1.7'}));
-}
-
-function tplComparison() {
-  tx('⚖️ KARŞILAŞTIRMA', 200, 50, 394, 46, {fontSize:'24px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif",textAlign:'center'});
-  addEl('shape',{shapeType:'rect',x:60,y:106,w:310,h:44,style:{fill:'#38ef7d'}});
-  addEl('shape',{shapeType:'rect',x:424,y:106,w:310,h:44,style:{fill:'#ff6584'}});
-  tx('✅ ARTILARI', 60, 114, 310, 28, {fontSize:'13px',fontWeight:'700',color:'#fff',textAlign:'center',letterSpacing:'1px'});
-  tx('❌ EKSİLERİ', 424, 114, 310, 28, {fontSize:'13px',fontWeight:'700',color:'#fff',textAlign:'center',letterSpacing:'1px'});
-  addEl('shape',{shapeType:'line',x:392,y:106,w:2,h:900,style:{fill:'#e8e8e8'}});
-  for(let i=0;i<8;i++){
-    const y = 162+i*100;
-    addEl('shape',{shapeType:'rounded',x:68,y,w:295,h:82,style:{fill:'#f0fff4',stroke:'#38ef7d'}});
-    tx('Artı madde '+(i+1), 80, y+12, 270, 58, {fontSize:'13px',color:'#1a5c35',lineHeight:'1.7'});
-    addEl('shape',{shapeType:'rounded',x:432,y,w:295,h:82,style:{fill:'#fff0f0',stroke:'#ff6584'}});
-    tx('Eksi madde '+(i+1), 444, y+12, 270, 58, {fontSize:'13px',color:'#5c1a1a',lineHeight:'1.7'});
-  }
-}
-
-function tplSwot() {
-  tx('🔷 SWOT ANALİZİ', 60, 50, 500, 46, {fontSize:'24px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
-  tx('Konu / Şirket / Proje Adı', 60, 96, 500, 28, {fontSize:'13px',color:'#888'});
-  const quads = [
-    {label:'💪 GÜÇLÜ YÖNLER',color:'#2193b0',x:60,y:140,items:['Güçlü yön 1','Güçlü yön 2','Güçlü yön 3']},
-    {label:'⚠️ ZAYIF YÖNLER',color:'#ff6584',x:427,y:140,items:['Zayıf yön 1','Zayıf yön 2','Zayıf yön 3']},
-    {label:'🚀 FIRSATLAR',color:'#38ef7d',x:60,y:630,items:['Fırsat 1','Fırsat 2','Fırsat 3']},
-    {label:'🔥 TEHDİTLER',color:'#f5c842',x:427,y:630,items:['Tehdit 1','Tehdit 2','Tehdit 3']},
-  ];
-  quads.forEach(q=>{
-    addEl('shape',{shapeType:'rect',x:q.x,y:q.y,w:337,h:460,style:{fill:'#f8f8f8',stroke:'#e8e8e8'}});
-    addEl('shape',{shapeType:'rect',x:q.x,y:q.y,w:337,h:44,style:{fill:q.color}});
-    tx(q.label, q.x+8, q.y+10, 320, 26, {fontSize:'12px',fontWeight:'700',color:'#fff',letterSpacing:'0.5px'});
-    q.items.forEach((item,i)=>tx('• '+item, q.x+14, q.y+58+i*46, 310, 38, {fontSize:'13px',color:'#2a2a2a',lineHeight:'1.6'}));
-  });
-}
-
-function tplKanban() {
-  tx('🗂️ KANBAN PANOSU', 60, 50, 500, 46, {fontSize:'24px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
-  const cols = [{label:'📋 YAPILACAK',color:'#6c63ff'},{label:'⚙️ YAPILIYOR',color:'#f5c842'},{label:'✅ TAMAMLANDI',color:'#38ef7d'}];
-  cols.forEach((col,ci)=>{
-    const x = 60+ci*240;
-    addEl('shape',{shapeType:'rect',x,y:106,w:220,h:900,style:{fill:'#f5f5fa',stroke:'#e8e8e8'}});
-    addEl('shape',{shapeType:'rect',x,y:106,w:220,h:38,style:{fill:col.color}});
-    tx(col.label, x+6, y=114, 208, 22, {fontSize:'10px',fontWeight:'700',color:ci===1?'#1a1a1a':'#fff',letterSpacing:'1px'});
-    for(let i=0;i<4;i++){
-      addEl('shape',{shapeType:'rounded',x:x+10,y:154+i*100,w:200,h:84,style:{fill:'#fff',stroke:'#e8e8e8'}});
-      tx('Görev '+(ci*4+i+1), x+18, 162+i*100, 184, 24, {fontSize:'13px',fontWeight:'600',color:'#1a1a2e'});
-      tx('Açıklama...', x+18, 188+i*100, 184, 36, {fontSize:'11px',color:'#888',lineHeight:'1.5'});
+  },
+  table: function(){
+    A4.style.background='#fff';
+    qt('📐 VERİ TABLOSU',60,50,500,48,{fontSize:'24px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
+    qs('rect',60,108,670,36,'#1a1a2e');
+    ['#','BAŞLIK 1','BAŞLIK 2','BAŞLIK 3'].forEach(function(h,i){qt(h,68+i*165,116,155,20,{fontSize:'10px',fontWeight:'700',color:'#fff',letterSpacing:'1px'});});
+    for(var r=0;r<7;r++){
+      var ry=144+r*36;
+      qs('rect',60,ry,670,36,r%2===0?'#f8f8f8':'#fff');
+      [r+1,'Veri','Değer','Not'].forEach(function(d,i){qt(String(d),68+i*165,ry+8,155,22,{fontSize:'13px',color:'#2a2a2a'});});
     }
-  });
-}
+  },
+  notes: function(){
+    A4.style.background='#fffdf0';
+    qs('rect',0,0,794,6,'#e87040');
+    qt('📝 NOTLAR',60,24,300,48,{fontSize:'28px',fontWeight:'800',color:'#2a2a2a',fontFamily:'Georgia,serif'});
+    qt(new Date().toLocaleDateString('tr-TR'),500,40,230,24,{fontSize:'12px',color:'#bbb',textAlign:'right'});
+    for(var i=0;i<16;i++){
+      qs('line',60,96+i*54,670,2,'#e8e4c8');
+      qt('',68,100+i*54,658,40,{fontSize:'14px',color:'#3a3a2a'});
+    }
+  },
+  resume: function(){
+    qs('rect',0,0,794,140,'#1a1a2e');
+    qt('AD SOYAD',40,36,400,52,{fontSize:'30px',fontWeight:'800',color:'#fff',fontFamily:"'Syne',sans-serif"});
+    qt('Ünvan / Pozisyon',40,95,300,32,{fontSize:'15px',color:'rgba(255,255,255,.6)'});
+    qt('📧 email@email.com  •  📱 555 123 4567',40,156,560,26,{fontSize:'12px',color:'#666'});
+    qs('rect',0,190,230,933,'#f8f8f8');
+    ['EĞİTİM','BECERİLER','İLETİŞİM'].forEach(function(s,i){
+      qt(s,14,210+i*240,200,22,{fontSize:'10px',fontWeight:'700',color:'#6c63ff',letterSpacing:'2px'});
+      qs('line',14,234+i*240,200,2,'#6c63ff');
+      qt('İçerik buraya...',14,240+i*240,200,80,{fontSize:'12px',color:'#2a2a2a',lineHeight:'1.7'});
+    });
+    ['DENEYİM','PROJELER'].forEach(function(s,i){
+      qt(s,245,210+i*330,470,22,{fontSize:'10px',fontWeight:'700',color:'#1a1a2e',letterSpacing:'2px'});
+      qs('line',245,234+i*330,480,2,'#e8e8e8');
+      qt('Şirket — Pozisyon (2020–2024)',245,240+i*330,470,26,{fontSize:'13px',fontWeight:'600',color:'#1a1a2e'});
+      qt('Görev açıklaması buraya yazılır.',245,270+i*330,470,55,{fontSize:'12px',color:'#666',lineHeight:'1.7'});
+    });
+  },
+  timeline: function(){
+    A4.style.background='#fff';
+    qt('⏱️ ZAMAN ÇİZELGESİ',60,44,500,46,{fontSize:'24px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
+    qs('line',128,110,3,880,'#e8e8e8');
+    var evs=['Ocak 2023','Nisan 2023','Temmuz 2023','Ekim 2023','Ocak 2024','Nisan 2024'];
+    evs.forEach(function(d,i){
+      var y=118+i*155;
+      qs('circle',114,y,26,26,i%2===0?'#6c63ff':'#ff6584');
+      qt(d,162,y,180,24,{fontSize:'10px',fontWeight:'700',color:i%2===0?'#6c63ff':'#ff6584',letterSpacing:'1px'});
+      qt('Olay başlığı',162,y+26,450,26,{fontSize:'15px',fontWeight:'700',color:'#1a1a2e'});
+      qt('Açıklama metni buraya gelir.',162,y+54,450,38,{fontSize:'12px',color:'#777',lineHeight:'1.6'});
+    });
+  },
+  cover: function(){
+    A4.style.background='linear-gradient(135deg,#1a1a2e 0%,#0f3460 100%)';
+    qs('rect',0,0,794,5,'#6c63ff');
+    qt('KAPAK<br>BAŞLIĞI',80,340,634,110,{fontSize:'52px',fontWeight:'800',color:'#fff',fontFamily:"'Syne',sans-serif",textAlign:'center',lineHeight:'1.1'});
+    qs('line',220,470,354,3,'#f5c842');
+    qt('Alt başlık veya slogan',80,490,634,42,{fontSize:'18px',color:'rgba(255,255,255,.7)',textAlign:'center'});
+    qt(new Date().getFullYear()+'',80,998,634,34,{fontSize:'13px',color:'rgba(255,255,255,.3)',textAlign:'center'});
+  },
+  invoice: function(){
+    A4.style.background='#fff';
+    qt('FATURA',60,44,280,52,{fontSize:'32px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
+    qt('No: #001\nTarih: '+new Date().toLocaleDateString('tr-TR'),450,44,280,52,{fontSize:'12px',color:'#888',textAlign:'right'});
+    qs('line',60,106,670,2,'#1a1a2e');
+    qt('Kimden:\nŞirket Adı\nAdres',60,120,300,65,{fontSize:'12px',color:'#2a2a2a',lineHeight:'1.6'});
+    qt('Kime:\nMüşteri Adı\nAdres',430,120,280,65,{fontSize:'12px',color:'#2a2a2a',lineHeight:'1.6'});
+    qs('rect',60,205,670,34,'#1a1a2e');
+    ['ÜRÜN','MİKTAR','FİYAT','TOPLAM'].forEach(function(h,i){qt(h,68+i*165,213,155,20,{fontSize:'10px',fontWeight:'700',color:'#fff',letterSpacing:'1px'});});
+    for(var r=0;r<5;r++){
+      var ry=239+r*36;
+      qs('rect',60,ry,670,36,r%2===0?'#f8f8f8':'#fff');
+      ['Ürün '+(r+1),'1','₺100','₺100'].forEach(function(d,i){qt(d,68+i*165,ry+8,155,22,{fontSize:'13px',color:'#2a2a2a'});});
+    }
+    qs('rect',450,460,280,36,'#6c63ff');
+    qt('TOPLAM: ₺500.00',458,468,264,22,{fontSize:'13px',fontWeight:'700',color:'#fff'});
+  },
+  poster: function(){
+    A4.style.background='linear-gradient(135deg,#ff6584,#ff8c42)';
+    qt('ETKİNLİK',60,80,674,70,{fontSize:'62px',fontWeight:'800',color:'#fff',fontFamily:"'Syne',sans-serif",textAlign:'center'});
+    qt('ADI BURAYA',60,148,674,60,{fontSize:'48px',fontWeight:'800',color:'rgba(255,255,255,.3)',fontFamily:"'Syne',sans-serif",textAlign:'center'});
+    qs('line',200,225,394,3,'rgba(255,255,255,.5)');
+    qt('📅 Tarih  •  🕐 Saat  •  📍 Yer',60,246,674,38,{fontSize:'15px',color:'rgba(255,255,255,.9)',textAlign:'center'});
+    qt('Etkinlik açıklaması buraya yazılır.',100,310,594,70,{fontSize:'14px',color:'rgba(255,255,255,.8)',textAlign:'center',lineHeight:'1.7'});
+    qs('rounded',270,420,254,52,'rgba(255,255,255,.15)');
+    qt('Detaylı Bilgi →',272,433,250,26,{fontSize:'14px',fontWeight:'700',color:'#fff',textAlign:'center'});
+  },
+  recipe: function(){
+    A4.style.background='#fffdf0';
+    qs('rect',0,0,794,5,'#e87040');
+    qt('🍳 Tarif Adı',60,26,500,52,{fontSize:'28px',fontWeight:'800',color:'#2a2a2a',fontFamily:'Georgia,serif'});
+    qt('⏱ 30 dk  •  👥 4 kişi  •  🔥 Orta',60,82,450,26,{fontSize:'12px',color:'#999'});
+    qs('line',60,114,670,2,'#e8e4c8');
+    qt('MALZEMELER',60,128,280,22,{fontSize:'10px',fontWeight:'700',color:'#e87040',letterSpacing:'2px'});
+    ['• 200g malzeme 1','• 100ml malzeme 2','• 3 adet malzeme 3','• 1 kaşık tuz','• Zeytinyağı'].forEach(function(m,i){qt(m,60,154+i*28,280,24,{fontSize:'13px',color:'#2a2a2a'});});
+    qt('HAZIRLANIŞI',380,128,280,22,{fontSize:'10px',fontWeight:'700',color:'#e87040',letterSpacing:'2px'});
+    ['1. İlk adım','2. İkinci adım','3. Üçüncü adım','4. Pişirme süresi','5. Servis önerisi'].forEach(function(s,i){qt(s,380,154+i*52,330,44,{fontSize:'13px',color:'#2a2a2a',lineHeight:'1.6'});});
+  },
+  flyer: function(){
+    A4.style.background='#fff';
+    qs('rect',0,0,794,300,'#6c63ff');
+    qt('DUYURU',60,72,674,68,{fontSize:'56px',fontWeight:'800',color:'#fff',fontFamily:"'Syne',sans-serif",textAlign:'center'});
+    qt('Başlık ve Ana Mesaj',60,152,674,48,{fontSize:'22px',color:'rgba(255,255,255,.85)',textAlign:'center'});
+    qt('Tarih · Saat · Yer',60,210,674,34,{fontSize:'14px',color:'rgba(255,255,255,.6)',textAlign:'center'});
+    qt('Detaylı bilgi buraya yazılır. Önemli açıklamalar eklenir.',80,340,634,70,{fontSize:'15px',color:'#2a2a2a',textAlign:'center',lineHeight:'1.7'});
+    qs('rounded',247,450,300,52,'#6c63ff');
+    qt('İletişim / Kayıt',247,463,300,26,{fontSize:'14px',fontWeight:'700',color:'#fff',textAlign:'center'});
+    qt('📞 555 000 0000  •  🌐 www.site.com',80,548,634,26,{fontSize:'12px',color:'#999',textAlign:'center'});
+  },
+  newsletter: function(){
+    qs('rect',0,0,794,64,'#1a1a2e');
+    qt('📰 BÜLTEN ADI',60,16,500,34,{fontSize:'20px',fontWeight:'700',color:'#fff',fontFamily:"'Syne',sans-serif"});
+    qt(new Date().toLocaleDateString('tr-TR'),580,24,154,22,{fontSize:'11px',color:'rgba(255,255,255,.5)',textAlign:'right'});
+    qt('ÖNEMLI HABER',60,82,355,24,{fontSize:'10px',fontWeight:'700',color:'#6c63ff',letterSpacing:'1.5px'});
+    qt('Haber Başlığı',60,108,355,38,{fontSize:'18px',fontWeight:'700',color:'#1a1a2e'});
+    qt('Haber içeriği buraya yazılır. Okuyuculara aktarılacak bilgiler.',60,150,355,65,{fontSize:'13px',color:'#666',lineHeight:'1.7'});
+    qs('line',428,80,2,250,'#e8e8e8');
+    qt('KISA HABERLER',448,82,280,24,{fontSize:'10px',fontWeight:'700',color:'#ff6584',letterSpacing:'1.5px'});
+    ['Haber 1','Haber 2','Haber 3'].forEach(function(h,i){
+      qt('• '+h,448,112+i*64,280,22,{fontSize:'13px',fontWeight:'600',color:'#1a1a2e'});
+      qt('Kısa açıklama metni',448,136+i*64,280,22,{fontSize:'11px',color:'#999'});
+    });
+  },
+  certificate: function(){
+    A4.style.background='#faf8f3';
+    qs('rect',0,0,794,1123,'none');
+    qs('rect',8,8,778,1107,'none');
+    qt('🏆',320,75,155,70,{fontSize:'52px',textAlign:'center'});
+    qt('SERTİFİKA',80,158,634,52,{fontSize:'38px',fontWeight:'800',color:'#c9a84c',fontFamily:'Georgia,serif',textAlign:'center',letterSpacing:'5px'});
+    qs('line',200,220,394,2,'#c9a84c');
+    qt('Bu belge ile aşağıdaki kişinin',80,244,634,30,{fontSize:'14px',color:'#999',textAlign:'center'});
+    qt('AD SOYAD',80,282,634,58,{fontSize:'34px',fontWeight:'700',color:'#1a1a2e',fontFamily:'Georgia,serif',textAlign:'center'});
+    qt('başarı ile tamamladığı teyit edilir.',80,348,634,30,{fontSize:'14px',color:'#999',textAlign:'center'});
+    qt('KONU ADI',80,390,634,42,{fontSize:'20px',fontWeight:'700',color:'#c9a84c',textAlign:'center'});
+    qs('line',150,970,200,2,'#1a1a2e');
+    qt('İmza',150,978,200,22,{fontSize:'12px',color:'#999',textAlign:'center'});
+    qs('line',450,970,200,2,'#1a1a2e');
+    qt(new Date().toLocaleDateString('tr-TR'),450,978,200,22,{fontSize:'12px',color:'#999',textAlign:'center'});
+  },
+  quiz: function(){
+    A4.style.background='#fff';
+    qt('📋 SINAV / TEST',60,44,500,46,{fontSize:'24px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
+    qt('Ad Soyad: ________________________    Tarih: __________',60,96,670,26,{fontSize:'12px',color:'#666'});
+    qs('line',60,128,670,2,'#e8e8e8');
+    for(var q=1;q<=5;q++){
+      var qy=140+(q-1)*168;
+      qt('Soru '+q+': Soru metni buraya yazılır?',60,qy,670,28,{fontSize:'14px',fontWeight:'600',color:'#1a1a2e'});
+      ['A) Şık bir','B) Şık iki','C) Şık üç','D) Şık dört'].forEach(function(s,i){qt(s,80+i*158,qy+32,150,22,{fontSize:'12px',color:'#2a2a2a'});});
+      qs('rect',60,qy+62,670,36,'#f8f8f8');
+      qt('Cevap: ___________',68,qy+72,200,20,{fontSize:'11px',color:'#aaa'});
+      qs('line',60,qy+150,670,1,'#e8e8e8');
+    }
+  },
+  schedule: function(){
+    A4.style.background='#fff';
+    qt('📅 HAFTALIK PROGRAM',60,44,560,44,{fontSize:'22px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
+    var days=['PAZ','PZT','SAL','ÇAR','PER','CUM','CMT'];
+    var cw2=Math.floor(670/7);
+    qs('rect',60,98,670,34,'#1a1a2e');
+    days.forEach(function(d,i){qt(d,68+i*cw2,106,cw2-2,18,{fontSize:'9px',fontWeight:'700',color:i===0||i===6?'#ff6584':'#fff',textAlign:'center',letterSpacing:'1px'});});
+    var times=['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00'];
+    times.forEach(function(t,r){
+      qs('rect',60,132+r*70,670,70,r%2===0?'#f8f8f8':'#fff');
+      qt(t,14,144+r*70,44,16,{fontSize:'9px',color:'#bbb',textAlign:'right'});
+    });
+  },
+  proposal: function(){
+    qs('rect',0,0,794,190,'#1a1a2e');
+    qs('rect',0,184,794,6,'#6c63ff');
+    qt('PROJE TEKLİFİ',60,46,500,52,{fontSize:'30px',fontWeight:'800',color:'#fff',fontFamily:"'Syne',sans-serif"});
+    qt('Proje / Müşteri Adı',60,108,500,34,{fontSize:'15px',color:'rgba(255,255,255,.5)'});
+    qt(new Date().toLocaleDateString('tr-TR'),560,116,174,26,{fontSize:'12px',color:'rgba(255,255,255,.4)',textAlign:'right'});
+    ['PROJE HAKKINDA','KAPSAM','ZAMAN ÇİZELGESİ','BÜTÇE','İLETİŞİM'].forEach(function(s,i){
+      var sy=215+i*160;
+      qs('rect',60,sy,6,55,'#6c63ff');
+      qt(s,76,sy+3,380,22,{fontSize:'10px',fontWeight:'700',color:'#6c63ff',letterSpacing:'1.5px'});
+      qt('Bu bölümün içeriği buraya yazılır.',76,sy+28,640,48,{fontSize:'13px',color:'#2a2a2a',lineHeight:'1.7'});
+    });
+  },
+  journal: function(){
+    A4.style.background='#fdf9f0';
+    qs('rect',0,0,6,1123,'#e87040');
+    qt(new Date().toLocaleDateString('tr-TR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}),24,36,730,34,{fontSize:'14px',color:'#c0a882',fontFamily:'Georgia,serif',fontStyle:'italic'});
+    qt('Günlük...',24,76,700,46,{fontSize:'26px',fontWeight:'700',color:'#2a2a2a',fontFamily:'Georgia,serif'});
+    qs('line',24,128,750,1,'#e8dcc8');
+    qt('Bugün nasıl hissettim?',24,144,400,22,{fontSize:'10px',color:'#c0a882',letterSpacing:'1px'});
+    for(var i=0;i<8;i++){qs('line',24,172+i*52,750,1,'#e8dcc8');qt('',30,174+i*52,740,36,{fontSize:'14px',color:'#2a2a2a',lineHeight:'1.7'});}
+    qt('Minnettar olduklarım:',24,608,300,22,{fontSize:'10px',color:'#c0a882',letterSpacing:'1px'});
+    ['1.','2.','3.'].forEach(function(n,i){qt(n+'  ____________________________________',24,634+i*44,440,34,{fontSize:'13px',color:'#2a2a2a'});});
+  },
+  comparison: function(){
+    A4.style.background='#fff';
+    qt('⚖️ KARŞILAŞTIRMA',197,44,400,44,{fontSize:'22px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif",textAlign:'center'});
+    qs('rect',60,98,310,42,'#38ef7d');
+    qs('rect',424,98,310,42,'#ff6584');
+    qt('✅ ARTILARI',60,108,310,26,{fontSize:'12px',fontWeight:'700',color:'#fff',textAlign:'center',letterSpacing:'1px'});
+    qt('❌ EKSİLERİ',424,108,310,26,{fontSize:'12px',fontWeight:'700',color:'#fff',textAlign:'center',letterSpacing:'1px'});
+    qs('line',390,98,2,900,'#e8e8e8');
+    for(var i=0;i<7;i++){
+      var iy=152+i*100;
+      qs('rounded',68,iy,295,82,'#f0fff4');
+      qt('Artı madde '+(i+1),78,iy+10,275,56,{fontSize:'13px',color:'#1a5c35',lineHeight:'1.7'});
+      qs('rounded',432,iy,295,82,'#fff0f0');
+      qt('Eksi madde '+(i+1),442,iy+10,275,56,{fontSize:'13px',color:'#5c1a1a',lineHeight:'1.7'});
+    }
+  },
+  swot: function(){
+    A4.style.background='#fff';
+    qt('🔷 SWOT ANALİZİ',60,44,500,44,{fontSize:'24px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
+    qt('Konu / Proje Adı',60,90,500,26,{fontSize:'13px',color:'#999'});
+    var qs2=[
+      {l:'💪 GÜÇLÜ',c:'#2193b0',x:60,y:130},{l:'⚠️ ZAYIF',c:'#ff6584',x:427,y:130},
+      {l:'🚀 FIRSAT',c:'#38ef7d',x:60,y:616},{l:'🔥 TEHDİT',c:'#f5c842',x:427,y:616}
+    ];
+    qs2.forEach(function(q){
+      qs('rect',q.x,q.y,337,460,'#f8f8f8');
+      qs('rect',q.x,q.y,337,42,q.c);
+      qt(q.l,q.x+8,q.y+10,320,24,{fontSize:'12px',fontWeight:'700',color:'#fff'});
+      ['Madde 1','Madde 2','Madde 3'].forEach(function(item,i){qt('• '+item,q.x+12,q.y+56+i*46,310,36,{fontSize:'13px',color:'#2a2a2a',lineHeight:'1.6'});});
+    });
+  },
+  kanban: function(){
+    A4.style.background='#f5f5fa';
+    qt('🗂️ KANBAN PANOSU',60,44,500,44,{fontSize:'22px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
+    [{l:'📋 YAPILACAK',c:'#6c63ff'},{l:'⚙️ YAPILIYOR',c:'#f5c842'},{l:'✅ TAMAMLANDI',c:'#38ef7d'}].forEach(function(col,ci){
+      var cx=60+ci*245;
+      qs('rect',cx,98,225,900,'#fff');
+      qs('rect',cx,98,225,36,col.c);
+      qt(col.l,cx+5,106,215,22,{fontSize:'9px',fontWeight:'700',color:ci===1?'#1a1a1a':'#fff',letterSpacing:'1px'});
+      for(var i=0;i<4;i++){
+        qs('rounded',cx+8,142+i*100,209,82,'#f8f8f8');
+        qt('Görev '+(ci*4+i+1),cx+16,150+i*100,190,22,{fontSize:'13px',fontWeight:'600',color:'#1a1a2e'});
+        qt('Açıklama...',cx+16,174+i*100,190,32,{fontSize:'11px',color:'#aaa',lineHeight:'1.5'});
+      }
+    });
+  },
+  infographic: function(){
+    A4.style.background='#1a1a2e';
+    qs('rect',0,0,794,110,'#6c63ff');
+    qt('İNFOGRAFİK BAŞLIĞI',60,28,674,55,{fontSize:'28px',fontWeight:'800',color:'#fff',fontFamily:"'Syne',sans-serif",textAlign:'center'});
+    [['%85','Oran 1'],['1.2K','Sayı 2'],['42','Veri 3'],['#1','Sıra']].forEach(function(s,i){
+      var sx=60+i*178;
+      qs('rounded',sx,128,158,108,'rgba(255,255,255,.07)');
+      qt(s[0],sx+4,148,150,42,{fontSize:'32px',fontWeight:'800',color:'#f5c842',textAlign:'center',fontFamily:"'Syne',sans-serif"});
+      qt(s[1],sx+4,194,150,22,{fontSize:'11px',color:'rgba(255,255,255,.55)',textAlign:'center'});
+    });
+    ['Kategori A','Kategori B','Kategori C','Kategori D'].forEach(function(cat,i){
+      var cy=278+i*115;
+      qt(cat,60,cy,155,22,{fontSize:'12px',color:'rgba(255,255,255,.7)'});
+      qs('rounded',218,cy,452,20,'rgba(255,255,255,.1)');
+      qs('rounded',218,cy,[75,50,90,35][i]/100*452,20,'#6c63ff');
+      qt([75,50,90,35][i]+'%',680,cy,58,20,{fontSize:'11px',color:'rgba(255,255,255,.5)',textAlign:'right'});
+    });
+  },
+  moodboard: function(){
+    A4.style.background='#f0f0f5';
+    qs('rect',0,0,794,72,'#fff');
+    qt('✨ MOOD BOARD',36,18,400,38,{fontSize:'20px',fontWeight:'700',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
+    qt('Tema Adı',460,24,280,26,{fontSize:'12px',color:'#aaa',textAlign:'right'});
+    var blks=[{x:18,y:80,w:365,h:230,c:'#6c63ff'},{x:392,y:80,w:182,h:110,c:'#ff6584'},{x:392,y:198,w:182,h:112,c:'#f5c842'},{x:582,y:80,w:194,h:230,c:'#38ef7d'},{x:18,y:318,w:182,h:200,c:'#2193b0'},{x:208,y:318,w:182,h:200,c:'#e65100'},{x:398,y:318,w:378,h:200,c:'#a855f7'}];
+    blks.forEach(function(b){
+      qs('rect',b.x,b.y,b.w,b.h,b.c);
+      qt('Foto / Renk',b.x+8,b.y+b.h/2-10,b.w-16,22,{fontSize:'10px',color:'rgba(255,255,255,.4)',textAlign:'center'});
+    });
+    ['Kelime','Tema','Renk','Doku','His'].forEach(function(w,i){qt(w,18+i*155,544,145,30,{fontSize:'13px',fontWeight:'700',color:'#1a1a2e',textAlign:'center'});});
+    qt('Notlar ve fikirler buraya...',18,588,758,90,{fontSize:'13px',color:'#888',lineHeight:'1.7',fontStyle:'italic',fontFamily:'Georgia,serif'});
+  },
+};
 
-function tplInfogr() {
-  a4.style.background = '#1a1a2e';
-  addEl('shape',{shapeType:'rect',x:0,y:0,w:794,h:120,style:{fill:'#6c63ff'}});
-  tx('İNFOGRAFİK BAŞLIĞI', 60, 36, 674, 55, {fontSize:'30px',fontWeight:'900',color:'#fff',fontFamily:"'Syne',sans-serif",textAlign:'center'});
-  const stats = [['%85','Oran 1'],['1.2K','Sayı 2'],['42','Veri 3'],['#1','Sıralama']];
-  stats.forEach((s,i)=>{
-    const x = 60+i*175;
-    addEl('shape',{shapeType:'rounded',x,y:140,w:155,h:110,style:{fill:'rgba(255,255,255,.07)',stroke:'rgba(255,255,255,.1)'}});
-    tx(s[0], x+4, y=158, 148, 44, {fontSize:'34px',fontWeight:'900',color:'#f5c842',textAlign:'center',fontFamily:"'Syne',sans-serif"});
-    tx(s[1], x+4, 206, 148, 24, {fontSize:'11px',color:'rgba(255,255,255,.6)',textAlign:'center'});
-  });
-  ['Kategori A','Kategori B','Kategori C','Kategori D'].forEach((cat,i)=>{
-    const y = 290+i*120;
-    tx(cat, 60, y, 150, 24, {fontSize:'12px',color:'rgba(255,255,255,.7)'});
-    const pct = [75,50,90,35][i];
-    addEl('shape',{shapeType:'rounded',x:220,y:y,w:450,h:22,style:{fill:'rgba(255,255,255,.1)'}});
-    addEl('shape',{shapeType:'rounded',x:220,y:y,w:450*pct/100,h:22,style:{fill:'#6c63ff'}});
-    tx(pct+'%', 680, y, 60, 22, {fontSize:'11px',color:'rgba(255,255,255,.6)',textAlign:'right'});
-  });
-}
-
-function tplMoodboard() {
-  a4.style.background = '#f0f0f5';
-  addEl('shape',{shapeType:'rect',x:0,y:0,w:794,h:80,style:{fill:'#fff'}});
-  tx('✨ MOOD BOARD', 40, 22, 400, 40, {fontSize:'22px',fontWeight:'800',color:'#1a1a2e',fontFamily:"'Syne',sans-serif"});
-  tx('Tema / Konsept Adı', 460, 28, 300, 28, {fontSize:'12px',color:'#888',textAlign:'right'});
-  const blocks = [
-    {x:20,y:90,w:360,h:240,c:'#6c63ff'},{x:390,y:90,w:185,h:115,c:'#ff6584'},
-    {x:390,y:215,w:185,h:115,c:'#f5c842'},{x:585,y:90,w:185,h:240,c:'#38ef7d'},
-    {x:20,y:340,w:185,h:200,c:'#2193b0'},{x:215,y:340,w:185,h:200,c:'#e65100'},
-    {x:410,y:340,w:360,h:200,c:'#7b1fa2'},
-  ];
-  blocks.forEach(b=>{
-    addEl('shape',{shapeType:'rect',x:b.x,y:b.y,w:b.w,h:b.h,style:{fill:b.c}});
-    tx('Fotoğraf / Renk', b.x+8, b.y+b.h/2-10, b.w-16, 24, {fontSize:'11px',color:'rgba(255,255,255,.5)',textAlign:'center'});
-  });
-  ['Kelime 1','Tema','Renk','Doku','His'].forEach((w,i)=>{
-    tx(w, 30+i*148, 575, 130, 32, {fontSize:'14px',fontWeight:'700',color:'#1a1a2e',textAlign:'center'});
-  });
-  tx('Notlar ve fikirler buraya...', 20, 620, 754, 100, {fontSize:'13px',color:'#888',lineHeight:'1.7',fontStyle:'italic',fontFamily:"'Playfair Display',serif"});
-}
-
-// ─────────────────────────────────────────────
-// MODAL
-// ─────────────────────────────────────────────
-function showTemplateModal() {
-  const grid = document.getElementById('modalGrid');
-  grid.innerHTML = TEMPLATES.map(t=>`
-  <div class="modal-tpl" onclick="applyTemplate('${t.id}')">
-    <div class="mi">${t.icon}</div>
-    <div class="mn">${t.name}</div>
-    <div class="ms">${t.desc}</div>
-  </div>`).join('');
-  document.getElementById('tplModal').classList.add('show');
-}
-function hideTplModal(e) {
-  if(!e || e.target === document.getElementById('tplModal'))
-    document.getElementById('tplModal').classList.remove('show');
-}
-
-// ─────────────────────────────────────────────
-// UTILS
-// ─────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2500);
-}
-
-// Keyboard shortcuts
-document.addEventListener('keydown', e=>{
-  if(e.key==='Delete' && selectedEl && document.activeElement.contentEditable!=='true') deleteEl(selectedEl);
-  if((e.ctrlKey||e.metaKey) && e.key==='z') undoAction();
-  if((e.ctrlKey||e.metaKey) && e.key==='d' && selectedEl) { e.preventDefault(); duplicate(); }
+// ===== KEYBOARD =====
+document.addEventListener('keydown',function(e){
+  if(e.key==='Delete'&&selId&&document.activeElement.contentEditable!=='true') deleteEl(selId);
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undoLast();}
+  if((e.ctrlKey||e.metaKey)&&e.key==='d'&&selId){e.preventDefault();dupEl();}
 });
 
-// INIT
-renderTemplatePanel();
-showToast('👋 Şablon seçin veya eleman ekleyin!');
+// ===== TOAST =====
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2200);}
+
+// ===== INIT =====
+renderPanel('tpl');
+toast('👋 Şablon seçin veya eleman ekleyin!');
 </script>
 </body>
 </html>
