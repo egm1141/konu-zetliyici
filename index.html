@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocMaker — Belge Oluşturucu</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e10;
+    --surface: #18181c;
+    --surface2: #222228;
+    --border: #2e2e38;
+    --accent: #f5c842;
+    --accent2: #e87040;
+    --text: #f0ede6;
+    --muted: #888898;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+
+  header {
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(14,14,16,.95);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900; }
+  .logo span { color: var(--accent); }
+  .badge { background: var(--accent); color: #0e0e10; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 99px; letter-spacing: 1px; }
+
+  .app { display: grid; grid-template-columns: 360px 1fr; flex: 1; height: calc(100vh - 65px); }
+
+  /* LEFT */
+  .left { border-right: 1px solid var(--border); overflow-y: auto; background: var(--surface); display: flex; flex-direction: column; }
+
+  .panel-section { padding: 18px 20px; border-bottom: 1px solid var(--border); }
+  .panel-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; font-weight: 600; }
+
+  /* Photo upload */
+  .dropzone {
+    border: 2px dashed var(--border); border-radius: var(--radius);
+    padding: 24px; text-align: center; cursor: pointer; transition: all .2s;
+    background: var(--surface2); position: relative;
+  }
+  .dropzone:hover, .dropzone.drag-over { border-color: var(--accent); background: rgba(245,200,66,.05); }
+  .dropzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .drop-icon { font-size: 32px; margin-bottom: 8px; }
+  .drop-text { font-size: 13px; color: var(--muted); }
+  .drop-text strong { color: var(--accent); }
+
+  .thumbs { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 12px; }
+  .thumb { aspect-ratio: 1; border-radius: 8px; overflow: hidden; position: relative; border: 2px solid transparent; cursor: pointer; transition: border-color .2s; }
+  .thumb.active { border-color: var(--accent); }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .thumb-del { position: absolute; top: 3px; right: 3px; background: rgba(0,0,0,.7); border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 9px; cursor: pointer; color: #fff; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .2s; }
+  .thumb:hover .thumb-del { opacity: 1; }
+
+  /* Text input */
+  .text-input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; resize: vertical;
+    min-height: 120px; line-height: 1.6;
+  }
+  .text-input:focus { outline: none; border-color: var(--accent); }
+  .text-input::placeholder { color: var(--muted); }
+
+  /* Title input */
+  .title-input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+  }
+  .title-input:focus { outline: none; border-color: var(--accent); }
+
+  /* Format buttons */
+  .format-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .format-btn {
+    padding: 12px 8px; border-radius: 10px; border: 1.5px solid var(--border);
+    background: var(--surface2); color: var(--text); cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+    transition: all .2s; text-align: center; line-height: 1.3;
+  }
+  .format-btn .fi { font-size: 18px; display: block; margin-bottom: 4px; }
+  .format-btn:hover { border-color: var(--accent); }
+  .format-btn.active { border-color: var(--accent); background: rgba(245,200,66,.12); color: var(--accent); }
+
+  /* Options */
+  .opt-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(46,46,56,.5); font-size: 13px; }
+  .opt-row:last-child { border-bottom: none; }
+  .toggle { width: 38px; height: 21px; background: var(--border); border-radius: 99px; position: relative; cursor: pointer; transition: background .2s; border: none; }
+  .toggle.on { background: var(--accent); }
+  .toggle::after { content: ''; position: absolute; width: 15px; height: 15px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: transform .2s; }
+  .toggle.on::after { transform: translateX(17px); }
+  select.opt-sel { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 4px 8px; border-radius: 6px; font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+
+  /* Color picker */
+  .color-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .color-dot { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all .2s; }
+  .color-dot.active { border-color: #fff; transform: scale(1.2); }
+
+  .generate-btn {
+    margin: 16px 20px; padding: 15px; background: var(--accent); color: #0e0e10;
+    border: none; border-radius: var(--radius); font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 700; cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .generate-btn:hover { background: #f5d050; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(245,200,66,.3); }
+
+  /* RIGHT */
+  .right { overflow-y: auto; background: #1a1a20; display: flex; flex-direction: column; align-items: center; padding: 32px 32px 80px; }
+
+  .preview-toolbar { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; max-width: 794px; flex-wrap: wrap; }
+  .tb-btn { padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 5px; }
+  .tb-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .tb-btn.danger:hover { border-color: #e84040; color: #e84040; }
+  .sp { flex: 1; }
+
+  /* A4 */
+  .a4 {
+    width: 794px; min-height: 1123px; background: #fff; color: #1a1a1a;
+    border-radius: 3px; box-shadow: 0 20px 80px rgba(0,0,0,.6);
+    padding: 60px 70px; position: relative; transition: all .3s;
+  }
+
+  /* EMPTY */
+  .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 700px; text-align: center; gap: 12px; }
+  .empty-ico { font-size: 60px; opacity: .25; }
+  .empty-t { font-size: 20px; font-family: 'Playfair Display', serif; color: #999; }
+  .empty-s { font-size: 13px; color: #bbb; max-width: 280px; line-height: 1.6; }
+
+  /* ── DOC STYLES ── */
+  /* Summary */
+  .doc-summary .dt { font-size: 30px; font-weight: 800; margin-bottom: 6px; line-height: 1.2; }
+  .doc-summary .dm { font-size: 12px; color: #999; border-bottom: 2px solid #eee; padding-bottom: 14px; margin-bottom: 24px; }
+  .doc-summary .db p { font-size: 14px; line-height: 1.85; color: #2a2a2a; margin-bottom: 14px; }
+  .doc-summary .db { font-size: 14px; line-height: 1.85; color: #2a2a2a; }
+
+  /* Bullets */
+  .doc-bullets .dt { font-size: 26px; font-weight: 800; margin-bottom: 20px; }
+  .doc-bullets .bs { margin-bottom: 22px; }
+  .doc-bullets .bh { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #e87040; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1.5px solid #e87040; }
+  .doc-bullets ul { padding-left: 20px; }
+  .doc-bullets li { font-size: 13.5px; line-height: 1.7; color: #2a2a2a; margin-bottom: 5px; }
+
+  /* Mind Map */
+  .doc-mindmap .mmt { font-size: 20px; font-weight: 800; text-align: center; background: #1a1a2e; color: #fff; padding: 12px 28px; border-radius: 99px; display: inline-block; margin: 0 auto 30px; position: relative; left: 50%; transform: translateX(-50%); }
+  .mmc { position: relative; height: 620px; }
+  .mm-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); background: #f5c842; color: #1a1a1a; border-radius: 50%; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; text-align: center; padding: 14px; z-index: 3; box-shadow: 0 4px 20px rgba(245,200,66,.4); cursor: pointer; }
+  .mm-node { position: absolute; background: #fff; border: 2px solid #1a1a2e; border-radius: 10px; padding: 8px 12px; font-size: 12px; font-weight: 600; max-width: 150px; text-align: center; cursor: pointer; transition: all .2s; z-index: 2; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+  .mm-node:hover { transform: scale(1.05); }
+  .mm-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+
+  /* Report */
+  .doc-report .rh { border-bottom: 3px solid #1a1a2e; margin-bottom: 26px; padding-bottom: 18px; }
+  .doc-report .rt { font-size: 28px; font-weight: 800; color: #1a1a2e; }
+  .doc-report .rs { font-size: 13px; color: #888; margin-top: 4px; }
+  .doc-report .rsec { margin-bottom: 22px; }
+  .doc-report .rsh { font-size: 13px; font-weight: 700; color: #1a1a2e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; border-left: 3px solid #f5c842; padding-left: 10px; }
+  .doc-report p { font-size: 13.5px; line-height: 1.8; color: #2a2a2a; margin-bottom: 8px; }
+
+  /* Table */
+  .doc-table .dt { font-size: 24px; font-weight: 800; margin-bottom: 22px; }
+  .doc-table table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .doc-table th { background: #1a1a2e; color: #fff; padding: 11px 13px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .8px; }
+  .doc-table td { padding: 9px 13px; border-bottom: 1px solid #eee; color: #2a2a2a; }
+  .doc-table tr:nth-child(even) td { background: #f8f8f8; }
+
+  /* Notes */
+  .doc-notes { background: #fffdf0; min-height: 1123px; }
+  .doc-notes .nt { font-size: 26px; font-weight: 800; margin-bottom: 8px; color: #2a2a2a; }
+  .doc-notes .nl { width: 100%; height: 1.5px; background: repeating-linear-gradient(90deg, #ddd 0px, #ddd 8px, transparent 8px, transparent 14px); margin: 14px 0; }
+  .doc-notes .note-line { padding: 10px 0; border-bottom: 1px solid #e8e4c8; font-size: 14px; line-height: 1.6; color: #3a3a2a; min-height: 40px; font-family: 'DM Sans', sans-serif; }
+
+  /* Editable */
+  [contenteditable] { outline: none; cursor: text; border-radius: 3px; }
+  [contenteditable]:hover { background: rgba(245,200,66,.07); }
+  [contenteditable]:focus { background: rgba(245,200,66,.12); outline: 2px solid rgba(245,200,66,.25); }
+
+  /* Image in doc */
+  .doc-photo { width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 20px; }
+  .doc-photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+  .doc-photo-grid img { width: 100%; height: 160px; object-fit: cover; border-radius: 6px; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 28px; right: 28px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); color: var(--text); padding: 12px 18px; border-radius: 10px; font-size: 13px; z-index: 999; opacity: 0; transform: translateY(8px); transition: all .3s; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+  @media print {
+    header, .left, .right > :not(.a4), .preview-toolbar { display: none !important; }
+    body { background: white; }
+    .right { padding: 0; background: white; }
+    .a4 { box-shadow: none; width: 100%; min-height: auto; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Doc<span>Maker</span></div>
+  </div>
+  <span class="badge">✦ ÜCRETSİZ</span>
+</header>
+
+<div class="app">
+  <!-- LEFT -->
+  <div class="left">
+
+    <div class="panel-section">
+      <div class="panel-label">📌 Belge Başlığı</div>
+      <input type="text" class="title-input" id="docTitle" placeholder="Başlığı girin..." />
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-label">🖼️ Fotoğraf Ekle (İsteğe Bağlı)</div>
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="fileInput" accept="image/*" multiple />
+        <div class="drop-icon">📷</div>
+        <div class="drop-text"><strong>Fotoğraf ekle</strong> veya sürükle bırak</div>
+      </div>
+      <div class="thumbs" id="thumbs"></div>
+      <div style="margin-top:10px;">
+        <div class="panel-label" style="margin-bottom:6px;">Fotoğraf Düzeni</div>
+        <select class="opt-sel" id="photoLayout" style="width:100%;">
+          <option value="none">Fotoğraf Gösterme</option>
+          <option value="top">Üstte Tek Büyük</option>
+          <option value="grid">Izgara (2'li)</option>
+          <option value="side">Her Paragrafın Yanında</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-label">✏️ İçerik / Notlar</div>
+      <textarea class="text-input" id="contentInput" placeholder="Buraya notlarınızı, maddeleri veya içeriği yazın...&#10;&#10;Örnek:&#10;- Matematik formülleri&#10;- Önemli tarihler&#10;- Ders özeti..."></textarea>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-label">📄 Format</div>
+      <div class="format-grid">
+        <button class="format-btn active" data-fmt="summary"><span class="fi">📝</span>Özet Yazısı</button>
+        <button class="format-btn" data-fmt="bullets"><span class="fi">📋</span>Madde Madde</button>
+        <button class="format-btn" data-fmt="mindmap"><span class="fi">🧠</span>Beyin Haritası</button>
+        <button class="format-btn" data-fmt="report"><span class="fi">📊</span>Rapor</button>
+        <button class="format-btn" data-fmt="table"><span class="fi">📐</span>Tablo</button>
+        <button class="format-btn" data-fmt="notes"><span class="fi">🗒️</span>Defter Notu</button>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-label">🎨 Görünüm</div>
+      <div class="opt-row">
+        <span>Tema Rengi</span>
+        <div class="color-row" id="colorPicker">
+          <div class="color-dot active" data-color="#1a1a2e" style="background:#1a1a2e"></div>
+          <div class="color-dot" data-color="#1a472a" style="background:#1a472a"></div>
+          <div class="color-dot" data-color="#7b1fa2" style="background:#7b1fa2"></div>
+          <div class="color-dot" data-color="#b71c1c" style="background:#b71c1c"></div>
+          <div class="color-dot" data-color="#e65100" style="background:#e65100"></div>
+          <div class="color-dot" data-color="#006064" style="background:#006064"></div>
+        </div>
+      </div>
+      <div class="opt-row">
+        <span>Yazı Boyutu</span>
+        <select class="opt-sel" id="fontSize">
+          <option value="small">Küçük</option>
+          <option value="medium" selected>Orta</option>
+          <option value="large">Büyük</option>
+        </select>
+      </div>
+      <div class="opt-row">
+        <span>Tarih Ekle</span>
+        <button class="toggle on" id="dateToggle" onclick="this.classList.toggle('on')"></button>
+      </div>
+      <div class="opt-row">
+        <span>Sayfa No</span>
+        <button class="toggle" id="pageToggle" onclick="this.classList.toggle('on')"></button>
+      </div>
+    </div>
+
+    <button class="generate-btn" onclick="generate()">✦ Belge Oluştur</button>
+
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right">
+    <div class="preview-toolbar" id="toolbar" style="display:none">
+      <button class="tb-btn" onclick="window.print()">🖨️ Yazdır / PDF</button>
+      <button class="tb-btn" onclick="copyAll()">📋 Metni Kopyala</button>
+      <button class="tb-btn" onclick="addNote()">➕ Not Satırı Ekle</button>
+      <div class="sp"></div>
+      <button class="tb-btn danger" onclick="clearDoc()">🗑️ Temizle</button>
+    </div>
+
+    <div class="a4" id="a4">
+      <div class="empty" id="emptyState">
+        <div class="empty-ico">📄</div>
+        <div class="empty-t">Belge bekleniyor</div>
+        <div class="empty-s">Sol panelden içerik girin, format seçin ve "Belge Oluştur" butonuna basın.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let images = [];
+  let currentFmt = 'summary';
+  let themeColor = '#1a1a2e';
+
+  // Dropzone
+  const dz = document.getElementById('dropzone');
+  const fi = document.getElementById('fileInput');
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+  dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); });
+  fi.addEventListener('change', e => handleFiles(e.target.files));
+
+  function handleFiles(files) {
+    Array.from(files).forEach(f => {
+      const r = new FileReader();
+      r.onload = e => { images.push(e.target.result); renderThumbs(); };
+      r.readAsDataURL(f);
+    });
+  }
+  function renderThumbs() {
+    document.getElementById('thumbs').innerHTML = images.map((src,i) => `
+      <div class="thumb ${i===0?'active':''}">
+        <img src="${src}" />
+        <button class="thumb-del" onclick="removeImg(event,${i})">✕</button>
+      </div>`).join('');
+  }
+  function removeImg(e, i) { e.stopPropagation(); images.splice(i,1); renderThumbs(); }
+
+  // Format
+  document.querySelectorAll('.format-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.format-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      currentFmt = b.dataset.fmt;
+    });
+  });
+
+  // Color
+  document.querySelectorAll('.color-dot').forEach(d => {
+    d.addEventListener('click', () => {
+      document.querySelectorAll('.color-dot').forEach(x => x.classList.remove('active'));
+      d.classList.add('active');
+      themeColor = d.dataset.color;
+    });
+  });
+
+  function getPhotoHTML() {
+    if (images.length === 0) return '';
+    const layout = document.getElementById('photoLayout').value;
+    if (layout === 'none') return '';
+    if (layout === 'top') return `<img src="${images[0]}" class="doc-photo" />`;
+    if (layout === 'grid') {
+      const imgs = images.slice(0,4).map(s => `<img src="${s}" />`).join('');
+      return `<div class="doc-photo-grid">${imgs}</div>`;
+    }
+    return '';
+  }
+
+  function parseContent() {
+    const raw = document.getElementById('contentInput').value.trim();
+    if (!raw) return { paragraphs: [], bullets: [], sections: [] };
+    const lines = raw.split('\n').map(l => l.trim()).filter(l => l);
+    const bullets = lines.filter(l => l.startsWith('-') || l.startsWith('•') || l.startsWith('*')).map(l => l.replace(/^[-•*]\s*/,''));
+    const paragraphs = lines.filter(l => !l.startsWith('-') && !l.startsWith('•') && !l.startsWith('*'));
+
+    // Group into sections (headings are lines ending with : or ALL CAPS)
+    let sections = [];
+    let current = { title: 'Genel', items: [] };
+    lines.forEach(l => {
+      if (l.endsWith(':') || (l === l.toUpperCase() && l.length > 3)) {
+        if (current.items.length) sections.push(current);
+        current = { title: l.replace(/:$/,''), items: [] };
+      } else {
+        current.items.push(l.replace(/^[-•*]\s*/,''));
+      }
+    });
+    if (current.items.length || !sections.length) sections.push(current);
+    return { paragraphs, bullets, sections, raw };
+  }
+
+  function generate() {
+    const title = document.getElementById('docTitle').value.trim() || 'Başlıksız Belge';
+    const { paragraphs, bullets, sections, raw } = parseContent();
+    const showDate = document.getElementById('dateToggle').classList.contains('on');
+    const showPage = document.getElementById('pageToggle').classList.contains('on');
+    const fs = document.getElementById('fontSize').value;
+    const fsMap = { small: '12px', medium: '14px', large: '16px' };
+    const photoHTML = getPhotoHTML();
+    const dateStr = new Date().toLocaleDateString('tr-TR', {day:'numeric',month:'long',year:'numeric'});
+
+    let html = '';
+
+    if (currentFmt === 'summary') {
+      const paras = paragraphs.length ? paragraphs.map(p => `<p contenteditable="true">${p}</p>`).join('') : `<p contenteditable="true">${raw || 'İçerik buraya yazılır...'}</p>`;
+      html = `<div class="doc-summary">
+        ${photoHTML}
+        <h1 class="dt" contenteditable="true">${title}</h1>
+        <div class="dm" contenteditable="true">${showDate ? dateStr : ''} ${showDate ? '·' : ''} Kişisel Not</div>
+        <div class="db" style="font-size:${fsMap[fs]}">${paras}</div>
+      </div>`;
+    }
+
+    else if (currentFmt === 'bullets') {
+      const secs = sections.map(s => `
+        <div class="bs">
+          <div class="bh" contenteditable="true" style="color:${themeColor};border-color:${themeColor}">${s.title}</div>
+          <ul>${s.items.map(i => `<li contenteditable="true">${i}</li>`).join('')}</ul>
+        </div>`).join('');
+      html = `<div class="doc-bullets">
+        ${photoHTML}
+        <h1 class="dt" contenteditable="true" style="color:${themeColor}">${title}</h1>
+        ${secs || '<div class="bs"><div class="bh" contenteditable="true">Konu</div><ul><li contenteditable="true">Madde buraya...</li></ul></div>'}
+      </div>`;
+    }
+
+    else if (currentFmt === 'mindmap') {
+      const allItems = sections.flatMap(s => s.items).concat(bullets);
+      const nodeCount = Math.min(allItems.length || 6, 8);
+      const cx = 327, cy = 310;
+      const r = 220;
+      let nodes = '';
+      let lines = '';
+      for (let i = 0; i < nodeCount; i++) {
+        const angle = (2 * Math.PI / nodeCount) * i - Math.PI/2;
+        const nx = cx + r * Math.cos(angle) - 75;
+        const ny = cy + r * Math.sin(angle) - 25;
+        const lx = cx + r * Math.cos(angle);
+        const ly = cy + r * Math.sin(angle);
+        const label = allItems[i] || `Konu ${i+1}`;
+        nodes += `<div class="mm-node" contenteditable="true" style="left:${nx}px;top:${ny}px;">${label}</div>`;
+        lines += `<line x1="${cx}" y1="${cy}" x2="${lx}" y2="${ly}" stroke="#ccc" stroke-width="1.5"/>`;
+      }
+      html = `<div class="doc-mindmap">
+        ${photoHTML}
+        <div class="mmt" style="background:${themeColor}" contenteditable="true">${title}</div>
+        <div class="mmc">
+          <svg class="mm-svg"><${lines}</svg>
+          <div class="mm-center" contenteditable="true">${sections[0]?.title || title}</div>
+          ${nodes}
+        </div>
+      </div>`;
+      // Fix SVG
+      html = html.replace(`<${lines}`, lines);
+    }
+
+    else if (currentFmt === 'report') {
+      const secs = sections.map(s => `
+        <div class="rsec">
+          <div class="rsh" contenteditable="true" style="border-color:${themeColor}">${s.title}</div>
+          ${s.items.map(i => `<p contenteditable="true">${i}</p>`).join('')}
+        </div>`).join('');
+      html = `<div class="doc-report">
+        ${photoHTML}
+        <div class="rh" style="border-color:${themeColor}">
+          <div class="rt" contenteditable="true" style="color:${themeColor}">${title}</div>
+          <div class="rs" contenteditable="true">${showDate ? dateStr : 'Tarih'}</div>
+        </div>
+        ${secs || '<div class="rsec"><div class="rsh" contenteditable="true">Bölüm 1</div><p contenteditable="true">İçerik buraya...</p></div>'}
+      </div>`;
+    }
+
+    else if (currentFmt === 'table') {
+      const allItems = sections.flatMap(s => s.items).concat(bullets);
+      const rows = allItems.length ? allItems.map((item, i) => `
+        <tr>
+          <td contenteditable="true">${i+1}</td>
+          <td contenteditable="true">${item}</td>
+          <td contenteditable="true">—</td>
+        </tr>`).join('') : `<tr><td contenteditable="true">1</td><td contenteditable="true">Örnek madde</td><td contenteditable="true">Not</td></tr>`;
+      html = `<div class="doc-table">
+        ${photoHTML}
+        <h1 class="dt" contenteditable="true">${title}</h1>
+        <table>
+          <thead><tr>
+            <th contenteditable="true">#</th>
+            <th contenteditable="true">Konu / Madde</th>
+            <th contenteditable="true">Notlar</th>
+          </tr></thead>
+          <tbody id="tableBody">${rows}</tbody>
+        </table>
+      </div>`;
+    }
+
+    else if (currentFmt === 'notes') {
+      const allItems = sections.flatMap(s => s.items).concat(bullets);
+      const noteLines = allItems.length
+        ? allItems.map(i => `<div class="note-line" contenteditable="true">${i}</div>`).join('')
+        : Array(10).fill('<div class="note-line" contenteditable="true"></div>').join('');
+      html = `<div class="doc-notes">
+        ${photoHTML}
+        <div class="nt" contenteditable="true">${title}</div>
+        ${showDate ? `<div style="font-size:12px;color:#999;margin-bottom:8px;">${dateStr}</div>` : ''}
+        <div class="nl"></div>
+        ${noteLines}
+      </div>`;
+    }
+
+    // Footer
+    const footer = (showDate || showPage) ? `
+      <div style="position:absolute;bottom:30px;right:60px;font-size:11px;color:#bbb;">
+        ${showDate ? dateStr : ''} ${showDate && showPage ? '·' : ''} ${showPage ? 'Sayfa 1' : ''}
+      </div>` : '';
+
+    const a4 = document.getElementById('a4');
+    a4.innerHTML = html + footer;
+    document.getElementById('toolbar').style.display = 'flex';
+    showToast('✅ Belge oluşturuldu! Tüm metinler düzenlenebilir.');
+  }
+
+  function addNote() {
+    const a4 = document.getElementById('a4');
+    const line = document.createElement('div');
+    line.className = 'note-line';
+    line.contentEditable = 'true';
+    line.textContent = '';
+    a4.appendChild(line);
+    line.focus();
+  }
+
+  function copyAll() {
+    const text = document.getElementById('a4').innerText;
+    navigator.clipboard.writeText(text).then(() => showToast('📋 Metin kopyalandı!'));
+  }
+
+  function clearDoc() {
+    document.getElementById('a4').innerHTML = `<div class="empty" id="emptyState"><div class="empty-ico">📄</div><div class="empty-t">Belge bekleniyor</div><div class="empty-s">Sol panelden içerik girin, format seçin ve "Belge Oluştur" butonuna basın.</div></div>`;
+    document.getElementById('toolbar').style.display = 'none';
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
+</body>
+</html>
